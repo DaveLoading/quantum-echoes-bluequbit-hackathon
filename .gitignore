@@ -1,0 +1,9 @@
+# never commit credentials or local state
+.env
+*.env
+.lock
+work/
+__pycache__/
+*.pyc
+.DS_Store
+kit/rehearsal/

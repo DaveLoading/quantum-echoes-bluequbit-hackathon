@@ -1,0 +1,1069 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="kit-token" content="__KIT_TOKEN__">
+<title>Kit Control Panel</title>
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7; --surface: #fcfcfb; --surface-2: #f0efec;
+  --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+  --grid: #e1e0d9; --axis: #c3c2b7;
+  --border: rgba(11,11,11,0.10); --border-strong: rgba(11,11,11,0.24);
+  --accent: #2a78d6; --accent-track: #cde2fb;
+  --good: #0ca30c; --warning: #fab219; --serious: #ec835a; --critical: #d03b3b;
+  --reh-bg: #cde2fb; --reh-ink: #0d366b; --live-bg: #fab219; --live-ink: #0b0b0b;
+  --s0: #0b0b0b;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100;
+  --s5: #e87ba4; --s6: #008300; --s7: #6250d6; --s8: #e34948;
+  --q0: #cde2fb; --q1: #9ec5f4; --q2: #6da7ec; --q3: #3987e5; --q4: #1c5cab; --q5: #0d366b;
+  --q0-ink: #0b0b0b; --q1-ink: #0b0b0b; --q2-ink: #0b0b0b; --q3-ink: #0b0b0b; --q4-ink: #ffffff; --q5-ink: #ffffff;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --surface-2: #242422;
+    --ink: #f0efec; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835;
+    --border: rgba(255,255,255,0.10); --border-strong: rgba(255,255,255,0.22);
+    --accent: #3987e5; --accent-track: #0d366b;
+    --reh-bg: #104281; --reh-ink: #f0efec;
+    --s0: #f0efec;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+    --s5: #d55181; --s6: #0ca30c; --s7: #9085e9; --s8: #e66767;
+    --q0: #0d366b; --q1: #184f95; --q2: #256abf; --q3: #3987e5; --q4: #86b6ef; --q5: #cde2fb;
+    --q0-ink: #ffffff; --q1-ink: #ffffff; --q2-ink: #ffffff; --q3-ink: #0b0b0b; --q4-ink: #0b0b0b; --q5-ink: #0b0b0b;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--page); }
+body { margin: 0; background: var(--page); color: var(--ink); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; padding-bottom: 48px; }
+body.drawer-open { padding-bottom: calc(40vh + 48px); }
+.wrap { max-width: 1280px; margin: 0 auto; padding: 0 16px; }
+h2 { font-size: 20px; margin: 18px 0 6px; }
+h3 { font-size: 16px; margin: 0 0 8px; }
+h4 { font-size: 14px; margin: 0 0 4px; }
+code, .mono { font-family: var(--mono); font-size: 12.5px; }
+.muted { color: var(--ink-2); }
+.small { font-size: 12.5px; }
+[hidden] { display: none !important; }
+
+.banner { padding: 10px 16px; display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap; font-size: 15px; }
+.banner strong { font-size: 18px; letter-spacing: 0.06em; }
+.banner.rehearsal { background: var(--reh-bg); color: var(--reh-ink); }
+.banner.live { background: var(--live-bg); color: var(--live-ink); border-bottom: 4px solid var(--critical); }
+
+.top { display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: flex-start; padding-top: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--grid); }
+.top .label { font-size: 12px; color: var(--ink-2); }
+.top .val { font-size: 18px; font-weight: 600; }
+.spend { flex: 1 1 320px; min-width: 260px; }
+.meter { position: relative; height: 10px; background: var(--accent-track); border-radius: 5px; margin: 6px 0 4px; }
+.meter .fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--accent); border-radius: 5px; }
+.meter .fill.warn { background: var(--warning); }
+.meter .fill.crit { background: var(--critical); }
+.meter .proj { position: absolute; top: 0; bottom: 0; background: var(--accent); opacity: 0.35; border-radius: 5px; }
+.meter .tick { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--ink-2); }
+.ico { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; font-size: 11px; font-weight: 700; line-height: 1; vertical-align: -3px; margin-right: 4px; color: #fff; }
+.ico.good { background: var(--good); }
+.ico.warn { background: var(--warning); color: #0b0b0b; }
+.ico.crit { background: var(--critical); }
+.ico.info { background: var(--accent); }
+#conn { flex-basis: 100%; }
+
+.tabs { display: flex; gap: 4px; padding-top: 10px; flex-wrap: wrap; }
+.tab { font: inherit; font-size: 14px; padding: 7px 14px; border: 1px solid transparent; border-radius: 8px 8px 0 0; background: none; color: var(--ink-2); cursor: pointer; }
+.tab[aria-selected="true"] { color: var(--ink); background: var(--surface); border-color: var(--border); border-bottom-color: var(--surface); font-weight: 600; }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin: 14px 0; }
+.card.confirm { border: 2px solid var(--accent); }
+.card.confirm.live { border-color: var(--critical); }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.gridj { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 1000px) { .gridj { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); } }
+.gridj .card { margin: 0; }
+.grid3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.grid3 .card { margin: 0; }
+
+.tablewrap { overflow-x: auto; }
+table.tbl, table.md { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+.tbl th, .md th { text-align: left; color: var(--ink-2); font-weight: 600; border-bottom: 1px solid var(--axis); padding: 6px 8px; white-space: nowrap; }
+.tbl td, .md td { border-bottom: 1px solid var(--grid); padding: 6px 8px; vertical-align: top; }
+.tbl .num, .md .al-right { text-align: right; font-variant-numeric: tabular-nums; }
+.md .al-center { text-align: center; }
+.tbl tr.click { cursor: pointer; }
+.tbl tr.click:hover, .tbl tr.sel { background: var(--surface-2); }
+.tbl tr.sel td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+.nowrap { white-space: nowrap; }
+
+.btn { font: inherit; font-size: 13px; padding: 5px 10px; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink); cursor: pointer; white-space: nowrap; }
+.btn:hover { background: var(--surface-2); }
+.btn.primary { background: var(--accent); border-color: transparent; color: #fff; }
+.btn.spend { background: var(--critical); border-color: transparent; color: #fff; font-weight: 600; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn.sm { font-size: 12px; padding: 3px 8px; }
+.btns { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+
+input, select, textarea { font: inherit; font-size: 14px; padding: 5px 8px; border: 1px solid var(--border-strong); border-radius: 6px; background: var(--page); color: var(--ink); min-width: 0; }
+::placeholder { color: var(--muted); font-style: italic; opacity: 1; }
+input[type="checkbox"] { width: 16px; height: 16px; vertical-align: -3px; }
+label.f { display: flex; flex-direction: column; gap: 3px; font-size: 12.5px; color: var(--ink-2); margin-bottom: 8px; }
+label.f > input, label.f > select { width: 100%; }
+label.chk { display: flex; gap: 6px; align-items: flex-start; font-size: 13px; margin-bottom: 8px; }
+.formrow { display: flex; gap: 10px; flex-wrap: wrap; }
+.formrow > * { flex: 1 1 140px; }
+.optrow { display: flex; gap: 6px; margin-bottom: 6px; }
+.optrow select { flex: 0 0 90px; }
+.optrow input { flex: 1 1 auto; }
+.filelist { max-height: 160px; overflow: auto; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; margin-bottom: 8px; }
+.help { font-size: 12.5px; color: var(--ink-2); margin: 0 0 8px; }
+
+.msg { padding: 8px 12px; border-radius: 6px; border-left: 4px solid var(--critical); background: var(--surface-2); margin: 8px 0; white-space: pre-wrap; }
+.msg.ok { border-left-color: var(--good); }
+.msg.warn { border-left-color: var(--warning); }
+.msg.info { border-left-color: var(--accent); }
+.chip { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; padding: 1px 8px; border-radius: 10px; background: var(--surface-2); white-space: nowrap; }
+
+.tiles { display: flex; flex-wrap: wrap; gap: 12px; }
+.tile { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; min-width: 130px; }
+.tile .label { font-size: 12px; color: var(--ink-2); }
+.tile .val { font-size: 22px; font-weight: 600; }
+
+.kv { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 10px 0; }
+.kv dt { color: var(--ink-2); }
+.kv dd { margin: 0; }
+.reasons { margin: 8px 0; padding-left: 0; list-style: none; }
+.reasons li { margin: 4px 0; }
+.typed { font-size: 16px; padding: 7px 10px; width: 220px; }
+
+svg.chart text { fill: var(--ink-2); font-size: 11px; font-variant-numeric: tabular-nums; }
+svg.chart .axlabel { font-size: 12px; }
+svg.chart .gridline { stroke: var(--grid); stroke-width: 1; }
+svg.chart .axisline { stroke: var(--axis); stroke-width: 1; }
+svg.chart .cross { stroke: var(--ink-2); stroke-width: 1; }
+svg.chart .line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+svg.chart:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ser-0 { stroke: var(--s0); } .ser-1 { stroke: var(--s1); } .ser-2 { stroke: var(--s2); } .ser-3 { stroke: var(--s3); } .ser-4 { stroke: var(--s4); }
+.ser-5 { stroke: var(--s5); } .ser-6 { stroke: var(--s6); } .ser-7 { stroke: var(--s7); } .ser-8 { stroke: var(--s8); }
+.dot { stroke: var(--surface); stroke-width: 2; }
+.fill-0 { fill: var(--s0); } .fill-1 { fill: var(--s1); } .fill-2 { fill: var(--s2); } .fill-3 { fill: var(--s3); } .fill-4 { fill: var(--s4); }
+.fill-5 { fill: var(--s5); } .fill-6 { fill: var(--s6); } .fill-7 { fill: var(--s7); } .fill-8 { fill: var(--s8); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 10px; }
+.lg { font: inherit; font-size: 12.5px; display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--ink); cursor: pointer; }
+.lg[aria-pressed="false"] { color: var(--muted); }
+.key { display: inline-block; width: 16px; border-top: 2px solid var(--muted); }
+.key-0 { border-color: var(--s0); } .key-1 { border-color: var(--s1); } .key-2 { border-color: var(--s2); } .key-3 { border-color: var(--s3); } .key-4 { border-color: var(--s4); }
+.key-5 { border-color: var(--s5); } .key-6 { border-color: var(--s6); } .key-7 { border-color: var(--s7); } .key-8 { border-color: var(--s8); }
+.key-off { border-top-style: solid; border-color: var(--grid); }
+.hm .bin-0 { fill: var(--q0); } .hm .bin-1 { fill: var(--q1); } .hm .bin-2 { fill: var(--q2); }
+.hm .bin-3 { fill: var(--q3); } .hm .bin-4 { fill: var(--q4); } .hm .bin-5 { fill: var(--q5); }
+.hm .t-0 { fill: var(--q0-ink); } .hm .t-1 { fill: var(--q1-ink); } .hm .t-2 { fill: var(--q2-ink); }
+.hm .t-3 { fill: var(--q3-ink); } .hm .t-4 { fill: var(--q4-ink); } .hm .t-5 { fill: var(--q5-ink); }
+svg.chart.hm text.cellv { font-size: 12px; font-weight: 600; }
+.hm .diag, .hm .na { fill: var(--surface-2); }
+.hm rect.cell.hot { stroke: var(--ink); stroke-width: 2; }
+.scale { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--ink-2); margin-top: 8px; }
+.sw { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: -3px; margin-right: 5px; }
+.sw.b0 { background: var(--q0); } .sw.b1 { background: var(--q1); } .sw.b2 { background: var(--q2); }
+.sw.b3 { background: var(--q3); } .sw.b4 { background: var(--q4); } .sw.b5 { background: var(--q5); }
+.bar { fill: var(--s1); }
+
+.tip { position: fixed; z-index: 30; pointer-events: none; background: var(--surface); color: var(--ink); border: 1px solid var(--border-strong); border-radius: 6px; padding: 6px 9px; font-size: 12.5px; box-shadow: 0 4px 14px rgba(0,0,0,0.18); max-width: 380px; }
+.tip .tr { display: flex; gap: 8px; align-items: center; white-space: nowrap; }
+.tip .tr strong { font-variant-numeric: tabular-nums; min-width: 46px; }
+.tip .th { color: var(--ink-2); margin-bottom: 3px; }
+
+.doc { max-width: 980px; }
+.doc h2 { font-size: 19px; } .doc h3 { font-size: 16px; margin-top: 16px; } .doc h4, .doc h5, .doc h6 { font-size: 14px; margin-top: 12px; }
+.doc pre { background: var(--surface-2); padding: 10px 12px; border-radius: 6px; overflow-x: auto; }
+.doc code { background: var(--surface-2); padding: 1px 4px; border-radius: 4px; }
+.doc pre code { background: none; padding: 0; }
+.doc table.md { margin: 8px 0 14px; }
+.doc blockquote { margin: 8px 0; padding: 2px 12px; border-left: 3px solid var(--axis); color: var(--ink-2); }
+.doc a { color: var(--accent); }
+
+.drawer { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--surface); border-top: 1px solid var(--axis); box-shadow: 0 -4px 14px rgba(0,0,0,0.08); }
+.drawer-head { display: flex; gap: 12px; align-items: center; padding: 6px 16px; min-height: 40px; }
+.drawer-body { display: grid; grid-template-columns: minmax(220px, 300px) 1fr; height: 40vh; border-top: 1px solid var(--grid); }
+.cmdlist { list-style: none; margin: 0; padding: 0; overflow: auto; border-right: 1px solid var(--grid); }
+.cmdlist li { padding: 6px 10px; border-bottom: 1px solid var(--grid); cursor: pointer; font-size: 12.5px; }
+.cmdlist li:hover, .cmdlist li.sel { background: var(--surface-2); }
+.cmdlist li.sel { box-shadow: inset 3px 0 0 var(--accent); }
+.cmdlist .lbl { font-family: var(--mono); font-size: 12px; word-break: break-all; }
+.outwrap { display: flex; flex-direction: column; min-width: 0; }
+.outhead { padding: 6px 12px; font-size: 12.5px; color: var(--ink-2); border-bottom: 1px solid var(--grid); }
+pre.out { margin: 0; padding: 8px 12px; overflow: auto; flex: 1; font-family: var(--mono); font-size: 12.5px; white-space: pre-wrap; word-break: break-word; }
+pre.out .err { color: var(--critical); }
+pre.out .meta { color: var(--ink-2); font-style: italic; }
+@media (prefers-color-scheme: dark) { pre.out .err { color: #e66767; } }
+@media (max-width: 700px) {
+  .drawer-body { grid-template-columns: 1fr; grid-template-rows: 30% 70%; }
+  .cmdlist { border-right: 0; border-bottom: 1px solid var(--grid); }
+}
+</style>
+</head>
+<body>
+<div id="banner" class="banner rehearsal"><strong>LOADING</strong><span>Connecting to the dashboard server.</span></div>
+<header class="top wrap">
+  <div><div class="label">ID prefix</div><div class="val mono" id="prefix">?</div></div>
+  <div class="spend">
+    <div class="label">Spend vs budget</div>
+    <div id="spend-text" class="val">?</div>
+    <div class="meter" id="spend-meter" role="img" aria-label="Spend versus budget"><div class="fill" id="spend-fill"></div><div class="tick" style="left:80%"></div></div>
+    <div class="small muted" id="spend-sub"></div>
+  </div>
+  <div><div class="label">Pending jobs</div><div class="val" id="pending">?</div><div class="small muted" id="pending-sub"></div></div>
+  <div><div class="label">Job slot (any bq_kit run or collect)</div><div class="val" id="slot">?</div><div class="small muted" id="slot-sub"></div></div>
+  <div><div class="label">Updated</div><div class="val small" id="updated">?</div></div>
+  <div id="conn" hidden></div>
+</header>
+<nav class="tabs wrap" role="tablist">
+  <button class="tab" role="tab" data-view="circuits" aria-selected="true">Circuits</button>
+  <button class="tab" role="tab" data-view="jobs" aria-selected="false">Jobs</button>
+  <button class="tab" role="tab" data-view="docs" aria-selected="false">Docs</button>
+  <button class="tab" role="tab" data-view="actions" aria-selected="false">Actions</button>
+</nav>
+<main class="wrap">
+  <section id="view-circuits">
+    <div class="card">
+      <h3>Circuits</h3>
+      <p class="help">From work/circuits.json, the CSVs in work/csv and the uploads table in work/submissions.md. Order is the count of x gates (1 = first-order echo, 2 = second-order). Click a row for detail.</p>
+      <div class="tablewrap"><table class="tbl" id="circuits-table">
+        <thead><tr><th>Circuit</th><th class="num">Qubits</th><th class="num">2q depth</th><th class="num">Order (x count)</th><th class="num">Points</th><th class="num">CSVs</th><th class="num">Uploads used</th><th class="num">Best score shown</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+    </div>
+    <div id="detail"></div>
+  </section>
+  <section id="view-jobs" hidden><div id="jobs"></div></section>
+  <section id="view-docs" hidden>
+    <div class="btns" style="margin-top:14px" id="doc-tabs">
+      <button class="btn" data-doc="circuits">circuits.md</button>
+      <button class="btn" data-doc="tuning">tuning.md</button>
+      <button class="btn" data-doc="picks">picks.md</button>
+      <button class="btn" data-doc="submissions">submissions.md</button>
+    </div>
+    <div class="card"><div id="doc-head" class="small muted"></div><div id="doc-body" class="doc"></div></div>
+  </section>
+  <section id="view-actions" hidden>
+    <div class="grid2">
+      <div class="card" id="run-card">
+        <h3>Paid run <code>run</code></h3>
+        <p class="help">Runs a circuit on BlueQubit through the kit. The server gets the cost estimate first; nothing is submitted until you confirm in the panel below. Refused while any other run or collect is active.</p>
+        <form id="run-form" autocomplete="off">
+          <div class="formrow">
+            <label class="f">Circuit<input id="run-circuit" list="dl-circuits" placeholder="e.g. G1" required></label>
+            <label class="f">Device<select id="run-device"></select></label>
+          </div>
+          <div class="f" style="font-size:12.5px;color:var(--ink-2)">Options (chi, th, level, wcut)</div>
+          <div id="run-opts"></div>
+          <div class="btns" style="margin-bottom:8px"><button type="button" class="btn sm" id="run-addopt">Add option</button></div>
+          <div class="formrow">
+            <label class="f">Qubits (blank = all)<input id="run-qubits" placeholder="e.g. 0-2,7"></label>
+            <label class="f">Max cost, USD (required)<input id="run-cap" inputmode="decimal"></label>
+          </div>
+          <label class="chk"><input type="checkbox" id="run-nowait"><span><code>--no-wait</code>: submit and return; gather later with collect. The kit sends only the qubits that fit the cap.</span></label>
+          <div class="btns"><button class="btn primary" type="submit" id="run-check">Check cost</button></div>
+          <div id="run-msg"></div>
+        </form>
+      </div>
+      <div>
+        <div class="card" id="collect-card">
+          <h3>Collect <code>collect</code></h3>
+          <p class="help">Picks up results of jobs left running (submitted with --no-wait) and builds their CSVs. Uses the job slot, so it is refused while a run or another collect is active.</p>
+          <div class="btns"><button class="btn primary" id="collect-btn">Collect now</button><span id="collect-slot" class="small muted"></span></div>
+          <div id="collect-msg"></div>
+        </div>
+        <div class="card" id="log-card">
+          <h3>Log an upload</h3>
+          <p class="help">After you upload a CSV on the website yourself, record it here. This adds one row to the table in work/submissions.md. The dashboard never uploads anything.</p>
+          <form id="log-form" autocomplete="off">
+            <div class="formrow">
+              <label class="f">Circuit<input id="log-circuit" list="dl-circuits" placeholder="e.g. G1"></label>
+              <label class="f">Score shown on the site<input id="log-score" inputmode="decimal" placeholder="e.g. 0.9731"></label>
+            </div>
+            <label class="f">File you uploaded<select id="log-file"></select></label>
+            <label class="f">Note<input id="log-note" maxlength="300" placeholder="method in a few words"></label>
+            <div id="log-preview" class="small muted" style="margin-bottom:8px"></div>
+            <div class="btns"><button class="btn primary" type="submit">Add row</button></div>
+            <div id="log-msg"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div id="run-panel"></div>
+    <h2>Free commands</h2>
+    <p class="help">These never submit jobs. estimate and info make free calls to BlueQubit in live mode. Output shows in the console at the bottom.</p>
+    <div class="grid3" id="free-grid"></div>
+  </section>
+</main>
+<datalist id="dl-circuits"></datalist>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <button class="btn" id="drawer-toggle" aria-expanded="false">Open console</button>
+    <span id="drawer-sum" class="small muted"></span>
+  </div>
+  <div class="drawer-body" id="drawer-body" hidden>
+    <ul class="cmdlist" id="cmd-list"></ul>
+    <div class="outwrap"><div class="outhead" id="out-head">No command selected.</div><pre class="out" id="out"></pre></div>
+  </div>
+</div>
+<div class="tip" id="tip" hidden></div>
+<script nonce="__NONCE__">
+'use strict';
+const TOKEN = document.querySelector('meta[name="kit-token"]').content;
+const DEVICES = ['cpu', 'gpu', 'mps.cpu', 'mps.gpu', 'pauli-path'];
+const OPT_KEYS = ['chi', 'th', 'level', 'wcut'];
+const S = { st: null, view: 'circuits', circuit: null, detail: null, detailSig: '', jobsSig: '', jobsLimit: 300,
+  doc: 'circuits', docSig: '', since: 0, cmds: [], out: {}, sel: null, rendered: { id: null, n: 0 },
+  vis: {}, showTable: false, panel: null, forms: {}, dead: false };
+const $ = (q) => document.querySelector(q);
+
+// ---------------------------------------------------------------- helpers
+function h(tag, attrs, ...kids) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v == null || v === false) continue;
+    if (k === 'class') el.className = v;
+    else if (k.startsWith('on') && typeof v === 'function') el.addEventListener(k.slice(2), v);
+    else el.setAttribute(k, v === true ? '' : v);
+  }
+  for (const kid of kids.flat()) {
+    if (kid == null || kid === false) continue;
+    el.append(kid instanceof Node ? kid : document.createTextNode(String(kid)));
+  }
+  return el;
+}
+const SVGNS = 'http://www.w3.org/2000/svg';
+function sv(tag, attrs, ...kids) {
+  const el = document.createElementNS(SVGNS, tag);
+  for (const [k, v] of Object.entries(attrs || {})) if (v != null) el.setAttribute(k, v);
+  for (const kid of kids.flat()) if (kid != null) el.append(kid instanceof Node ? kid : document.createTextNode(String(kid)));
+  return el;
+}
+const fmt = {
+  usd(x, d) { if (x == null || !isFinite(x)) return 'n/a'; if (d == null) d = Math.abs(x) < 10 ? 3 : 2; return '$' + Number(x).toFixed(d); },
+  cost(x) { if (x == null || !isFinite(x)) return 'n/a'; return '$' + Number(x).toFixed(4); },
+  c2(x) { return x == null || !isFinite(x) ? 'n/a' : Number(x).toFixed(4); },
+  pct(x) { return x == null || !isFinite(x) ? 'n/a' : Number(x).toFixed(x < 10 ? 1 : 0) + '%'; },
+  clock(sec) { return new Date(sec * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }); },
+  when(sec) { return new Date(sec * 1000).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }); },
+  ts(iso) { const d = new Date(iso); return isNaN(d) ? String(iso || '') : d.toLocaleString([], { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }); },
+  val(x) { return x == null || !isFinite(x) ? 'n/a' : Number(x).toFixed(4); },
+};
+function ico(kind) { return h('span', { class: 'ico ' + kind, 'aria-hidden': 'true' }, { good: '✓', warn: '!', crit: '×', info: 'i' }[kind]); }
+function msg(el, text, kind) { el.replaceChildren(text ? h('div', { class: 'msg ' + (kind || '') }, text) : ''); }
+
+async function api(path, body) {
+  const opt = { headers: { 'X-Kit-Token': TOKEN }, cache: 'no-store' };
+  if (body !== undefined) { opt.method = 'POST'; opt.headers['Content-Type'] = 'application/json'; opt.body = JSON.stringify(body); }
+  let r;
+  try { r = await fetch(path, opt); } catch (e) { const err = new Error("Can't reach the dashboard server. Is it still running?"); err.net = true; throw err; }
+  let data = {};
+  try { data = await r.json(); } catch (e) { data = { error: 'Unexpected response (' + r.status + ').' }; }
+  if (!r.ok) { const err = new Error(data.error || r.statusText); err.status = r.status; err.data = data; throw err; }
+  return data;
+}
+function connProblem(e) {
+  const c = $('#conn');
+  if (!e) { c.hidden = true; return; }
+  c.hidden = false;
+  const text = e.data && e.data.token ? 'The dashboard server restarted with a new key. Reload this page.' : e.message;
+  c.replaceChildren(h('div', { class: 'msg' }, ico('crit'), text));
+}
+
+const tip = $('#tip');
+function showTip(nodes, x, y) {
+  tip.replaceChildren(...nodes); tip.hidden = false;
+  const r = tip.getBoundingClientRect();
+  let left = x + 14, top = y + 14;
+  if (left + r.width > window.innerWidth - 8) left = x - r.width - 14;
+  if (top + r.height > window.innerHeight - 8) top = y - r.height - 14;
+  tip.style.left = Math.max(8, left) + 'px'; tip.style.top = Math.max(8, top) + 'px';
+}
+function hideTip() { tip.hidden = true; }
+
+async function copyText(text, btn) {
+  let ok = false;
+  try { await navigator.clipboard.writeText(text); ok = true; } catch (e) { ok = false; }
+  if (!ok) {
+    const ta = h('textarea', { style: 'position:fixed;left:-9999px;top:0;opacity:0' }); ta.value = text;
+    document.body.append(ta); ta.select();
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    ta.remove();
+  }
+  const old = btn.textContent; btn.textContent = ok ? 'Copied' : 'Select the path and copy it';
+  setTimeout(() => { btn.textContent = old; }, 1600);
+}
+
+// ---------------------------------------------------------------- views
+function setView(v) {
+  S.view = v;
+  for (const t of document.querySelectorAll('.tab')) t.setAttribute('aria-selected', String(t.dataset.view === v));
+  for (const id of ['circuits', 'jobs', 'docs', 'actions']) $('#view-' + id).hidden = id !== v;
+  hideTip();
+  if (v === 'jobs') loadJobs();
+  if (v === 'docs') loadDoc();
+  if (v === 'circuits' && S.circuit) loadDetail();
+}
+for (const t of document.querySelectorAll('.tab')) t.addEventListener('click', () => setView(t.dataset.view));
+
+function renderTop(st) {
+  const live = st.mode === 'live';
+  const b = $('#banner');
+  b.className = 'banner ' + (live ? 'live' : 'rehearsal');
+  b.replaceChildren(h('strong', null, live ? 'LIVE' : 'REHEARSAL'),
+    h('span', null, live ? 'Real BlueQubit account. Paid runs spend real money.' : 'Offline practice backend. No account, no real money. Children run with BQ_MODE=rehearsal and an empty token.'));
+  document.title = (live ? 'LIVE: ' : 'Rehearsal: ') + 'Kit Control Panel';
+  $('#prefix').textContent = st.prefix;
+  const frac = st.budget > 0 ? st.spent / st.budget : 1;
+  const fill = $('#spend-fill');
+  fill.style.width = Math.min(100, frac * 100) + '%';
+  fill.className = 'fill' + (frac >= 1 ? ' crit' : frac >= 0.8 ? ' warn' : '');
+  const t = $('#spend-text');
+  t.replaceChildren(frac >= 1 ? ico('crit') : frac >= 0.8 ? ico('warn') : '', `${fmt.usd(st.spent)} of ${fmt.usd(st.budget, 2)} (${fmt.pct(frac * 100)})`,
+    frac >= 1 ? ' budget used up' : frac >= 0.8 ? ' past the 80% line' : '');
+  $('#spend-sub').textContent = `Tick = 80% line (${fmt.usd(0.8 * st.budget, 2)}). Ask David before any single run over ${fmt.usd(st.ask, 2)}.` + (st.ledger_ok ? '' : ' Ledger was mid-write; numbers may lag a moment.');
+  $('#pending').textContent = String(st.pending);
+  $('#pending-sub').textContent = st.pending ? 'Use collect to gather them.' : `${st.jobs} jobs in the ledger`;
+  const sl = st.slot, slot = $('#slot'), sub = $('#slot-sub');
+  if (!sl.known) { slot.replaceChildren(ico('crit'), 'Unknown'); sub.textContent = "Couldn't read processes; run and collect are blocked."; }
+  else if (sl.busy) {
+    slot.replaceChildren(ico('warn'), 'Busy: ' + (sl.kinds.join(' + ') || 'run'));
+    sub.textContent = [sl.ui_job ? 'started here' : '', sl.external ? `${sl.external} started elsewhere (agent or terminal)` : ''].filter(Boolean).join('; ');
+  } else { slot.replaceChildren(ico('good'), 'Free'); sub.textContent = 'No bq_kit run or collect running.'; }
+  $('#updated').textContent = fmt.clock(st.now);
+  const blocked = !sl.known || sl.busy;
+  $('#collect-btn').disabled = blocked;
+  $('#collect-slot').textContent = blocked ? 'Job slot busy.' : 'Job slot free.';
+  $('#run-check').disabled = blocked;
+}
+
+function renderCircuits(st) {
+  const tb = $('#circuits-table tbody');
+  tb.replaceChildren();
+  if (!st.circuits.length) { tb.append(h('tr', null, h('td', { colspan: 8, class: 'muted' }, 'No circuits yet. Use info in Actions.'))); return; }
+  for (const c of st.circuits) {
+    const full = c.uploads >= st.max_uploads;
+    const tr = h('tr', { class: 'click' + (S.circuit === c.name ? ' sel' : ''), tabindex: 0 },
+      h('td', null, h('strong', null, c.name)),
+      h('td', { class: 'num' }, c.qubits ?? '?'), h('td', { class: 'num' }, c.depth_2q ?? '?'),
+      h('td', { class: 'num' }, c.order ?? '?'), h('td', { class: 'num' }, c.points ?? 'not set'),
+      h('td', { class: 'num' }, c.csvs),
+      h('td', { class: 'num nowrap' }, full ? ico('warn') : '', `${c.uploads} of ${st.max_uploads}`),
+      h('td', { class: 'num' }, c.best == null ? 'none' : String(c.best)));
+    const open = () => { S.circuit = c.name; S.detailSig = ''; renderCircuits(S.st); loadDetail(); };
+    tr.addEventListener('click', open);
+    tr.addEventListener('keydown', (e) => { if (e.key === 'Enter') open(); });
+    tb.append(tr);
+  }
+}
+
+// ---------------------------------------------------------------- circuit detail
+async function loadDetail() {
+  const name = S.circuit; if (!name) return;
+  try {
+    const d = await api('/api/circuit?name=' + encodeURIComponent(name));
+    if (name !== S.circuit) return;
+    const sig = JSON.stringify(d);
+    if (sig === S.detailSig) return;
+    S.detailSig = sig; S.detail = d; renderDetail(d);
+  } catch (e) { $('#detail').replaceChildren(h('div', { class: 'msg' }, e.message)); }
+}
+
+function renderDetail(d) {
+  const root = $('#detail');
+  hideTip();
+  const rehearsal = S.st && S.st.mode === 'rehearsal';
+  const facts = [`${d.qubits ?? '?'} qubits`, `2q depth ${d.depth_2q ?? '?'}`, `order ${d.order ?? '?'} (x count)`, `points ${d.points ?? 'not set'}`,
+    `uploads ${d.uploads.length} of ${d.max_uploads}`].join(' · ');
+  const head = h('div', { class: 'card' },
+    h('div', { class: 'btns', style: 'justify-content:space-between' },
+      h('div', null, h('h2', { style: 'margin:0' }, d.name), h('div', { class: 'muted' }, facts),
+        h('div', { class: 'small muted mono' }, Object.entries(d.count_ops).map(([k, v]) => `${k} ${v}`).join(', '))),
+      h('div', { class: 'btns' },
+        h('button', { class: 'btn', onclick: () => runFree('candidates', { circuit: d.name }) }, 'Run candidates'),
+        h('button', { class: 'btn', onclick: () => prefillRun(d.name) }, 'Paid run...'),
+        h('button', { class: 'btn', onclick: () => prefillFree('estimate', { circuit: d.name }) }, 'Estimate...'),
+        h('button', { class: 'btn', onclick: () => prefillLog(d.name, null) }, 'Log upload...'),
+        h('button', { class: 'btn', onclick: () => { S.circuit = null; root.replaceChildren(); renderCircuits(S.st); } }, 'Close'))));
+  root.replaceChildren(head);
+
+  // candidates table
+  const hasExact = d.candidates.some((c) => c.tag === 'exact_local' && c.ok);
+  const cands = d.candidates.slice().sort((a, b) => {
+    if (a.tag === 'exact_local') return -1; if (b.tag === 'exact_local') return 1;
+    if (hasExact) return (b.vs_exact ?? -1) - (a.vs_exact ?? -1);
+    return b.mtime - a.mtime;
+  });
+  const tb = h('tbody');
+  for (const c of cands) {
+    let vsx = '';
+    if (c.tag === 'exact_local') vsx = 'truth';
+    else if (c.vs_exact != null) vsx = fmt.c2(c.vs_exact) + (c.vs_exact_r != null && c.vs_exact_r < 0 ? ' (r < 0: sign flipped?)' : '');
+    else if (hasExact) vsx = 'n/a';
+    const dup = c.vs_uploaded != null && c.vs_uploaded > 0.995 && !c.uploaded;
+    const acts = c.pickable ? [
+      h('button', { class: 'btn sm', onclick: (e) => copyText(c.abs, e.currentTarget) }, 'Copy path'),
+      h('button', { class: 'btn sm', onclick: () => runFree('validate', { circuit: d.name, file: c.file }) }, 'Validate'),
+      rehearsal ? h('button', { class: 'btn sm', onclick: () => runFree('rehearsal-score', { circuit: d.name, file: c.file }) }, 'Rehearsal score') : null,
+      h('button', { class: 'btn sm', onclick: () => prefillLog(d.name, c.file) }, 'Log upload...'),
+    ] : [h('span', { class: 'small muted' }, 'Unusual file name; use the terminal.')];
+    tb.append(h('tr', null,
+      h('td', null, h('strong', { class: 'mono' }, c.tag), c.ok ? '' : h('div', { class: 'small' }, ico('crit'), `unreadable (${c.error || 'error'})`),
+        h('div', { class: 'small muted mono', style: 'user-select:all' }, c.file)),
+      h('td', { class: 'num nowrap' }, vsx),
+      h('td', { class: 'num nowrap' }, c.vs_uploaded == null ? 'none' : fmt.c2(c.vs_uploaded), dup ? h('div', { class: 'small' }, ico('warn'), 'near-duplicate of an upload') : ''),
+      h('td', null, c.uploaded ? h('span', { class: 'chip' }, ico('good'), 'uploaded') : ''),
+      h('td', { class: 'nowrap small' }, fmt.when(c.mtime)),
+      h('td', null, h('div', { class: 'btns' }, acts))));
+  }
+  root.append(h('div', { class: 'card' }, h('h3', null, `Candidate CSVs (${d.candidates.length})`),
+    h('p', { class: 'help' }, 'corr² is the score formula (squared Pearson, 0 if negative). "vs uploaded" is the best agreement with a file already uploaded for this circuit; above 0.995 it can\'t raise the score.'),
+    h('div', { class: 'tablewrap' }, h('table', { class: 'tbl' },
+      h('thead', null, h('tr', null, h('th', null, 'Setting and file'), h('th', { class: 'num' }, 'corr² vs exact_local'), h('th', { class: 'num' }, 'Max corr² vs uploaded'),
+        h('th', null, 'Uploaded'), h('th', null, 'Updated'), h('th', null, ''))), tb))));
+
+  const hmCard = h('div', { class: 'card' }, h('h3', null, 'Agreement between candidates (corr²)'),
+    h('p', { class: 'help' }, 'Each cell is corr² between two CSVs. Above 0.98 between a setting and the next tighter one suggests converged. A blend always agrees well with its own inputs, so that is not evidence.'));
+  const hmHost = h('div', { class: 'tablewrap' }); hmCard.append(hmHost);
+  const qCard = h('div', { class: 'card' }, h('h3', null, 'Per-qubit values, z-scored'),
+    h('p', { class: 'help' }, 'Each candidate scaled to mean 0 and spread 1, so scale and offset drop out as they do in scoring. Lines that track each other agree. A mirror image means a sign flip; a shifted pattern means a qubit order problem.'));
+  const qHost = h('div', { style: 'position:relative' }); qCard.append(qHost);
+  root.append(hmCard, qCard);
+  heatmap(hmHost, d);
+  qubitChart(qHost, d);
+
+  // spend by tag
+  const maxCost = Math.max(0, ...d.spend.map((e) => e.cost));
+  const sb = h('tbody');
+  for (const e of d.spend) sb.append(h('tr', null, h('td', { class: 'mono nowrap' }, e.tag), h('td', { class: 'nowrap' }, e.device ?? ''),
+    h('td', { class: 'num' }, e.jobs), h('td', { class: 'num' }, e.completed), h('td', { class: 'num' }, e.failed), h('td', { class: 'num' }, e.pending),
+    h('td', { class: 'num nowrap' }, inlineBar(e.cost, maxCost), ' ', fmt.cost(e.cost))));
+  if (!d.spend.length) sb.append(h('tr', null, h('td', { colspan: 7, class: 'muted' }, 'No ledger rows for this circuit yet.')));
+  const total = d.spend.reduce((s, e) => s + e.cost, 0);
+  root.append(h('div', { class: 'card' }, h('h3', null, `Spend on ${d.name} by setting: ${fmt.cost(total)}`),
+    h('div', { class: 'tablewrap' }, h('table', { class: 'tbl' }, h('thead', null, h('tr', null, h('th', null, 'Setting'), h('th', null, 'Device'),
+      h('th', { class: 'num' }, 'Jobs'), h('th', { class: 'num' }, 'Done'), h('th', { class: 'num' }, 'Failed'), h('th', { class: 'num' }, 'Pending'), h('th', { class: 'num' }, 'Cost'))), sb))));
+
+  // uploads logged
+  const ub = h('tbody');
+  for (const u of d.uploads) ub.append(h('tr', null, h('td', { class: 'nowrap' }, u.time), h('td', { class: 'mono' }, u.file), h('td', { class: 'num' }, u.score_text), h('td', null, u.upload), h('td', null, u.note)));
+  if (!d.uploads.length) ub.append(h('tr', null, h('td', { colspan: 5, class: 'muted' }, 'Nothing logged for this circuit yet.')));
+  root.append(h('div', { class: 'card' }, h('h3', null, `Uploads logged (${d.uploads.length} of ${d.max_uploads})`),
+    h('div', { class: 'tablewrap' }, h('table', { class: 'tbl' }, h('thead', null, h('tr', null, h('th', null, 'Time (Phoenix)'), h('th', null, 'File'), h('th', { class: 'num' }, 'Score shown'), h('th', null, 'Upload #'), h('th', null, 'Note'))), ub))));
+}
+
+function inlineBar(v, max) {
+  const w = 80, frac = max > 0 ? Math.max(0, v) / max : 0;
+  const s = sv('svg', { width: w, height: 8, viewBox: `0 0 ${w} 8`, 'aria-hidden': 'true', style: 'vertical-align:middle' });
+  if (frac > 0) s.append(sv('rect', { x: 0, y: 0, width: Math.max(2, frac * w), height: 8, rx: 2, class: 'bar' }));
+  return s;
+}
+
+// ---- heatmap
+const BINS = [0.8, 0.9, 0.95, 0.98, 0.995];
+const BIN_LABELS = ['below 0.80', '0.80 to 0.90', '0.90 to 0.95', '0.95 to 0.98', '0.98 to 0.995: converged', '0.995 and up: near-identical'];
+function binOf(v) { let k = 0; while (k < BINS.length && v >= BINS[k]) k++; return k; }
+const measure = (() => { const c = document.createElement('canvas').getContext('2d'); return (t, px) => { c.font = `${px}px system-ui, -apple-system, "Segoe UI", sans-serif`; return c.measureText(t).width; }; })();
+function heatmap(host, d) {
+  host.replaceChildren();
+  const names = d.matrix.names, M = d.matrix.corr2, R = d.matrix.r, k = names.length;
+  if (k < 2) { host.append(h('p', { class: 'muted' }, 'Needs two or more readable CSVs.')); return; }
+  const labels = names.map((n, i) => `${i + 1}  ${n.length > 44 ? n.slice(0, 43) + '…' : n}`);
+  const labelW = Math.ceil(Math.max(...labels.map((t) => measure(t, 12)))) + 16;
+  const avail = Math.max(280, host.clientWidth || 700) - labelW - 8;
+  const cell = Math.max(38, Math.min(64, Math.floor(avail / k)));
+  const top = 24, W = labelW + cell * k + 4, H = top + cell * k + 4;
+  const svg = sv('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}`, class: 'chart hm', role: 'img', 'aria-label': `Agreement matrix for ${d.name}` });
+  for (let j = 0; j < k; j++) svg.append(sv('text', { x: labelW + j * cell + cell / 2, y: 15, 'text-anchor': 'middle' }, String(j + 1)));
+  for (let i = 0; i < k; i++) {
+    svg.append(sv('text', { x: labelW - 10, y: top + i * cell + cell / 2 + 4, 'text-anchor': 'end' }, labels[i]));
+    for (let j = 0; j < k; j++) {
+      const v = M[i][j], x = labelW + j * cell, y = top + i * cell;
+      const diag = i === j, na = v == null;
+      const b = diag || na ? null : binOf(v);
+      const rect = sv('rect', { x: x + 1, y: y + 1, width: cell - 2, height: cell - 2, rx: 3, class: 'cell ' + (diag ? 'diag' : na ? 'na' : 'bin-' + b) });
+      svg.append(rect);
+      if (!diag) svg.append(sv('text', { x: x + cell / 2, y: y + cell / 2 + 4, 'text-anchor': 'middle', class: 'cellv ' + (na ? '' : 't-' + b), 'pointer-events': 'none' },
+        na ? 'n/a' : v.toFixed(cell >= 48 ? 3 : 2)));
+      if (!diag) {
+        const r = R[i][j];
+        const enter = (ev) => {
+          rect.classList.add('hot');
+          showTip([h('div', { class: 'tr' }, h('strong', null, na ? 'n/a' : v.toFixed(4)), h('span', { class: 'muted' }, 'corr²')),
+            h('div', { class: 'small muted' }, r == null ? (na ? 'Different qubit counts' : 'One file has no spread') : `Pearson r = ${r.toFixed(4)}${r < 0 ? ' (negative: opposite sign)' : ''}`),
+            h('div', { class: 'small' }, `${i + 1} ${names[i]}`), h('div', { class: 'small' }, `${j + 1} ${names[j]}`)], ev.clientX, ev.clientY);
+        };
+        rect.addEventListener('pointermove', enter);
+        rect.addEventListener('pointerleave', () => { rect.classList.remove('hot'); hideTip(); });
+      }
+    }
+  }
+  host.append(svg, h('div', { class: 'scale' }, BIN_LABELS.map((t, b) => h('span', null, h('span', { class: 'sw b' + b }), t))));
+}
+
+// ---- per-qubit chart
+function freeSlot(V) { const used = new Set(V.slot.values()); for (let s = 1; s <= 8; s++) if (!used.has(s)) return s; return null; }
+function visFor(name, cands) {
+  const tags = new Set(cands.map((c) => c.tag));
+  let V = S.vis[name];
+  if (!V) {
+    V = { on: new Set(), slot: new Map(), note: '' };
+    if (tags.has('exact_local')) V.on.add('exact_local');
+    for (const c of cands.filter((c) => c.tag !== 'exact_local').sort((a, b) => b.mtime - a.mtime).slice(0, 3)) { V.slot.set(c.tag, freeSlot(V)); V.on.add(c.tag); }
+    S.vis[name] = V;
+  }
+  for (const t of [...V.on]) if (!tags.has(t)) { V.on.delete(t); V.slot.delete(t); }
+  return V;
+}
+function toggleSeries(V, tag) {
+  V.note = '';
+  if (V.on.has(tag)) { V.on.delete(tag); V.slot.delete(tag); return; }
+  if (tag !== 'exact_local') { const s = freeSlot(V); if (!s) { V.note = 'Eight colored lines at most. Turn one off first.'; return; } V.slot.set(tag, s); }
+  V.on.add(tag);
+}
+function qubitChart(host, d) {
+  host.replaceChildren();
+  const cands = d.candidates.filter((c) => c.ok);
+  if (!cands.length) { host.append(h('p', { class: 'muted' }, 'No readable CSVs yet.')); return; }
+  const V = visFor(d.name, cands);
+  const slotOf = (tag) => (tag === 'exact_local' ? 0 : V.slot.get(tag));
+  const legend = h('div', { class: 'legend', role: 'group', 'aria-label': 'Lines shown' });
+  for (const c of cands) {
+    const on = V.on.has(c.tag);
+    legend.append(h('button', { class: 'lg', type: 'button', 'aria-pressed': String(on), title: on ? 'Hide' : 'Show',
+      onclick: () => { toggleSeries(V, c.tag); qubitChart(host, d); } }, h('span', { class: 'key ' + (on ? 'key-' + slotOf(c.tag) : 'key-off') }), c.tag));
+  }
+  host.append(legend);
+  if (V.note) host.append(h('div', { class: 'msg warn' }, V.note));
+  const shown = cands.filter((c) => V.on.has(c.tag));
+  const n = Math.max(...cands.map((c) => c.n));
+  const W = Math.max(320, host.clientWidth || 700), H = 300, m = { l: 48, r: 16, t: 12, b: 42 };
+  const pw = W - m.l - m.r, ph = H - m.t - m.b;
+  const zmax = Math.max(2, Math.ceil(Math.max(0, ...shown.flatMap((c) => c.z.map(Math.abs)))));
+  const x = (q) => m.l + (n > 1 ? (q / (n - 1)) * pw : pw / 2);
+  const y = (z) => m.t + ((zmax - z) / (2 * zmax)) * ph;
+  const svg = sv('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}`, class: 'chart', role: 'img', tabindex: 0,
+    'aria-label': `Per-qubit z-scored values for ${d.name}. Use the left and right arrow keys to read each qubit.` });
+  const step = zmax > 4 ? 2 : 1;
+  for (let z = -zmax; z <= zmax; z += step) {
+    svg.append(sv('line', { x1: m.l, x2: W - m.r, y1: y(z), y2: y(z), class: z === 0 ? 'axisline' : 'gridline' }));
+    svg.append(sv('text', { x: m.l - 8, y: y(z) + 4, 'text-anchor': 'end' }, (z > 0 ? '+' : '') + z));
+  }
+  const xstep = n <= 24 ? 1 : n <= 48 ? 2 : Math.ceil(n / 24);
+  for (let q = 0; q < n; q += xstep) svg.append(sv('text', { x: x(q), y: H - m.b + 16, 'text-anchor': 'middle' }, String(q)));
+  svg.append(sv('text', { x: m.l + pw / 2, y: H - 6, 'text-anchor': 'middle', class: 'axlabel' }, 'qubit'));
+  svg.append(sv('text', { x: 13, y: m.t + ph / 2, transform: `rotate(-90 13 ${m.t + ph / 2})`, 'text-anchor': 'middle', class: 'axlabel' }, 'z-score'));
+  const drawOrder = shown.slice().sort((a, b) => (a.tag === 'exact_local') - (b.tag === 'exact_local'));
+  for (const c of drawOrder) {
+    const dstr = c.z.map((z, q) => (q ? 'L' : 'M') + x(q).toFixed(1) + ' ' + y(z).toFixed(1)).join(' ');
+    svg.append(sv('path', { d: dstr, class: 'line ser-' + slotOf(c.tag) }));
+  }
+  const cross = sv('line', { class: 'cross', y1: m.t, y2: m.t + ph, visibility: 'hidden' });
+  const dots = sv('g');
+  svg.append(cross, dots, sv('rect', { x: m.l - 12, y: m.t, width: pw + 24, height: ph, fill: 'transparent' }));
+  let cur = null;
+  const show = (q, cx, cy) => {
+    cur = q;
+    cross.setAttribute('x1', x(q)); cross.setAttribute('x2', x(q)); cross.setAttribute('visibility', 'visible');
+    dots.replaceChildren();
+    const rows = [];
+    for (const c of shown) {
+      if (q >= c.z.length) continue;
+      dots.append(sv('circle', { cx: x(q), cy: y(c.z[q]), r: 4.5, class: 'dot fill-' + slotOf(c.tag) }));
+      rows.push([c.z[q], h('div', { class: 'tr' }, h('span', { class: 'key key-' + slotOf(c.tag) }), h('strong', null, (c.z[q] >= 0 ? '+' : '') + c.z[q].toFixed(2)),
+        h('span', { class: 'muted' }, `raw ${c.values[q].toFixed(4)}`), h('span', null, c.tag))]);
+    }
+    rows.sort((a, b) => b[0] - a[0]);
+    if (cx == null) { const r = svg.getBoundingClientRect(); cx = r.left + x(q) * (r.width / W); cy = r.top + m.t; }
+    showTip([h('div', { class: 'th' }, `qubit ${q}  (ID ${S.st ? S.st.prefix : ''}_${d.name}_${q})`), ...rows.map((r) => r[1])], cx, cy);
+  };
+  const hide = () => { cross.setAttribute('visibility', 'hidden'); dots.replaceChildren(); hideTip(); };
+  svg.addEventListener('pointermove', (ev) => {
+    const r = svg.getBoundingClientRect();
+    const px = (ev.clientX - r.left) * (W / r.width);
+    const q = Math.min(n - 1, Math.max(0, Math.round(n > 1 ? ((px - m.l) / pw) * (n - 1) : 0)));
+    show(q, ev.clientX, ev.clientY);
+  });
+  svg.addEventListener('pointerleave', hide);
+  svg.addEventListener('focus', () => show(cur ?? 0));
+  svg.addEventListener('blur', hide);
+  svg.addEventListener('keydown', (ev) => {
+    if (ev.key === 'ArrowRight') { ev.preventDefault(); show(Math.min(n - 1, (cur ?? -1) + 1)); }
+    if (ev.key === 'ArrowLeft') { ev.preventDefault(); show(Math.max(0, (cur ?? 1) - 1)); }
+    if (ev.key === 'Escape') hide();
+  });
+  host.append(svg);
+  if (!shown.length) host.append(h('p', { class: 'muted' }, 'All lines are hidden. Pick some above.'));
+  const tblBtn = h('button', { class: 'btn sm', type: 'button', onclick: () => { S.showTable = !S.showTable; qubitChart(host, d); } }, S.showTable ? 'Hide values table' : 'Show values table');
+  host.append(h('div', { class: 'btns', style: 'margin-top:6px' }, tblBtn, h('span', { class: 'small muted' }, 'The dark line is exact_local when it exists.')));
+  if (S.showTable) {
+    const thead = h('tr', null, h('th', { class: 'num' }, 'Qubit'), cands.map((c) => h('th', { class: 'num mono' }, c.tag)));
+    const body = h('tbody');
+    for (let q = 0; q < n; q++) body.append(h('tr', null, h('td', { class: 'num' }, q), cands.map((c) => h('td', { class: 'num' }, q < c.values.length ? c.values[q].toFixed(4) : 'n/a'))));
+    host.append(h('div', { class: 'tablewrap', style: 'margin-top:8px' }, h('table', { class: 'tbl' }, h('thead', null, thead), body)));
+  }
+}
+let resizeT = null;
+window.addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(() => { if (S.detail && S.view === 'circuits' && S.circuit) renderDetail(S.detail); }, 200); });
+
+// ---------------------------------------------------------------- jobs
+async function loadJobs() {
+  try {
+    const j = await api('/api/jobs?limit=' + S.jobsLimit);
+    const sig = JSON.stringify(j); if (sig === S.jobsSig) return; S.jobsSig = sig; renderJobs(j);
+  } catch (e) { $('#jobs').replaceChildren(h('div', { class: 'msg' }, e.message)); }
+}
+function renderJobs(j) {
+  const root = $('#jobs');
+  const st = j.status, done = st.COMPLETED || 0, failed = st.FAILED || 0;
+  const tile = (label, val, icon) => h('div', { class: 'tile' }, h('div', { class: 'label' }, icon ? ico(icon) : '', label), h('div', { class: 'val' }, val));
+  const others = Object.entries(st).filter(([k]) => k !== 'COMPLETED' && k !== 'FAILED').map(([k, v]) => `${k} ${v}`).join(', ');
+  root.replaceChildren(h('div', { class: 'tiles', style: 'margin-top:14px' },
+    tile('Jobs in ledger', j.total), tile('Completed', done, 'good'), tile('Failed', failed, failed ? 'crit' : null),
+    tile('Pending', j.pending, j.pending ? 'warn' : null), tile('Spent', fmt.usd(j.spent))),
+  others ? h('p', { class: 'small muted' }, 'Other statuses: ' + others) : '',
+  j.ok ? '' : h('div', { class: 'msg warn' }, 'A ledger line did not parse (the kit may be mid-write). Numbers catch up on the next refresh.'));
+  const maxC = Math.max(0, ...j.by_circuit.map((e) => e.cost));
+  const cb = h('tbody', null, j.by_circuit.map((e) => h('tr', null, h('td', null, h('strong', null, e.circuit)), h('td', { class: 'num' }, e.jobs), h('td', { class: 'num' }, e.pending),
+    h('td', { class: 'num nowrap' }, inlineBar(e.cost, maxC), ' ', fmt.cost(e.cost)))));
+  const maxT = Math.max(0, ...j.by_tag.map((e) => e.cost));
+  const tbt = h('tbody', null, j.by_tag.map((e) => h('tr', null, h('td', null, e.circuit), h('td', { class: 'mono nowrap' }, e.tag), h('td', { class: 'nowrap' }, e.device ?? ''), h('td', { class: 'num' }, e.jobs),
+    h('td', { class: 'num' }, e.completed), h('td', { class: 'num' }, e.failed), h('td', { class: 'num' }, e.pending), h('td', { class: 'num nowrap' }, inlineBar(e.cost, maxT), ' ', fmt.cost(e.cost)))));
+  root.append(h('div', { class: 'gridj', style: 'margin-top:14px' },
+    h('div', { class: 'card' }, h('h3', null, 'Spend by circuit'), h('div', { class: 'tablewrap' }, h('table', { class: 'tbl' },
+      h('thead', null, h('tr', null, h('th', null, 'Circuit'), h('th', { class: 'num' }, 'Jobs'), h('th', { class: 'num' }, 'Pending'), h('th', { class: 'num' }, 'Cost'))), cb))),
+    h('div', { class: 'card' }, h('h3', null, 'Spend by circuit and setting'), h('div', { class: 'tablewrap' }, h('table', { class: 'tbl' },
+      h('thead', null, h('tr', null, h('th', null, 'Circuit'), h('th', null, 'Setting'), h('th', null, 'Device'), h('th', { class: 'num' }, 'Jobs'), h('th', { class: 'num' }, 'Done'),
+        h('th', { class: 'num' }, 'Failed'), h('th', { class: 'num' }, 'Pending'), h('th', { class: 'num' }, 'Cost'))), tbt)))));
+  const lb = h('tbody', null, j.rows.map((r) => {
+    const s = r.status || 'UNKNOWN';
+    const icon = s === 'COMPLETED' ? 'good' : s === 'FAILED' ? 'crit' : 'warn';
+    return h('tr', null, h('td', { class: 'nowrap' }, fmt.ts(r.ts)), h('td', null, r.circuit), h('td', { class: 'num' }, r.q), h('td', { class: 'mono' }, r.tag), h('td', null, r.device),
+      h('td', { class: 'nowrap' }, ico(icon), s), h('td', { class: 'num' }, fmt.val(r.value)), h('td', { class: 'num' }, fmt.cost(r.cost)), h('td', { class: 'mono small' }, r.job_id));
+  }));
+  root.append(h('div', { class: 'card' }, h('div', { class: 'btns', style: 'justify-content:space-between' }, h('h3', null, 'Ledger, newest first'),
+    h('span', { class: 'small muted' }, `Showing ${j.rows.length} of ${j.total}. `,
+      j.rows.length < j.total ? h('button', { class: 'btn sm', onclick: () => { S.jobsLimit = 1000000; S.jobsSig = ''; loadJobs(); } }, 'Show all') : '')),
+  h('div', { class: 'tablewrap' }, h('table', { class: 'tbl' }, h('thead', null, h('tr', null, h('th', null, 'Time'), h('th', null, 'Circuit'), h('th', { class: 'num' }, 'q'), h('th', null, 'Setting'),
+    h('th', null, 'Device'), h('th', null, 'Status'), h('th', { class: 'num' }, 'Value'), h('th', { class: 'num' }, 'Cost'), h('th', null, 'Job id'))), lb))));
+}
+
+// ---------------------------------------------------------------- docs
+for (const b of document.querySelectorAll('#doc-tabs .btn')) b.addEventListener('click', () => { S.doc = b.dataset.doc; S.docSig = ''; loadDoc(); });
+async function loadDoc() {
+  for (const b of document.querySelectorAll('#doc-tabs .btn')) b.classList.toggle('primary', b.dataset.doc === S.doc);
+  try {
+    const d = await api('/api/docs?name=' + encodeURIComponent(S.doc));
+    const sig = JSON.stringify(d); if (sig === S.docSig) return; S.docSig = sig;
+    if (!d.exists) { $('#doc-head').textContent = d.path; $('#doc-body').replaceChildren(h('p', { class: 'muted' }, `${d.path} isn't written yet.`)); return; }
+    $('#doc-head').textContent = `${d.path} · updated ${fmt.when(d.mtime)} · read only`;
+    $('#doc-body').innerHTML = d.html; // server escapes all text before adding markup
+  } catch (e) { $('#doc-body').replaceChildren(h('div', { class: 'msg' }, e.message)); }
+}
+
+// ---------------------------------------------------------------- console drawer
+const drawer = { open: false };
+function setDrawer(open) {
+  drawer.open = open; $('#drawer-body').hidden = !open;
+  document.body.classList.toggle('drawer-open', open);
+  const b = $('#drawer-toggle'); b.textContent = open ? 'Hide console' : 'Open console'; b.setAttribute('aria-expanded', String(open));
+  if (open) renderConsole(true);
+}
+$('#drawer-toggle').addEventListener('click', () => setDrawer(!drawer.open));
+function openCmd(id) { S.sel = id; setDrawer(true); pollConsole(); }
+let consoleTimer = null, consoleBusy = false, consoleAgain = false;
+async function pollConsole() {
+  if (consoleBusy) { consoleAgain = true; return; }
+  consoleBusy = true; clearTimeout(consoleTimer);
+  try {
+    for (let i = 0; i < 20; i++) {
+      const r = await api('/api/console?since=' + S.since);
+      if (r.last < S.since) { S.since = 0; S.out = {}; S.rendered = { id: null, n: 0 }; continue; }
+      for (const [seq, cid, stream, text] of r.lines) {
+        if (seq <= S.since) continue;
+        (S.out[cid] = S.out[cid] || []).push([stream, text]); S.since = seq;
+      }
+      S.cmds = r.commands;
+      if (!r.more) break;
+    }
+    renderConsole(false);
+  } catch (e) { /* connection problems show in the header */ }
+  finally { consoleBusy = false; }
+  if (consoleAgain) { consoleAgain = false; return pollConsole(); }
+  const running = S.cmds.some((c) => c.running);
+  consoleTimer = setTimeout(pollConsole, running ? 1000 : 4000);
+}
+function statusChip(c) {
+  if (c.running) return h('span', { class: 'chip' }, ico('info'), 'running');
+  return h('span', { class: 'chip' }, ico(c.code === 0 ? 'good' : 'crit'), `exit ${c.code}`);
+}
+function renderConsole(force) {
+  const running = S.cmds.filter((c) => c.running).length;
+  const last = S.cmds[0];
+  $('#drawer-sum').replaceChildren(running ? `${running} running. ` : '', last ? `Last: ${last.label} ` : 'No commands run from this page yet.', last ? statusChip(last) : '');
+  if (!drawer.open) return;
+  if (S.sel == null && last) S.sel = last.id;
+  const list = $('#cmd-list'); list.replaceChildren();
+  for (const c of S.cmds) {
+    list.append(h('li', { class: c.id === S.sel ? 'sel' : '', onclick: () => { S.sel = c.id; renderConsole(true); } },
+      h('div', { class: 'lbl' }, c.label), h('div', { class: 'btns', style: 'margin-top:2px' }, statusChip(c), h('span', { class: 'small muted' }, fmt.clock(c.started)), c.job ? h('span', { class: 'chip' }, 'job slot') : '')));
+  }
+  const cmd = S.cmds.find((c) => c.id === S.sel);
+  const out = $('#out');
+  if (!cmd) { $('#out-head').textContent = 'No command selected.'; out.replaceChildren(); S.rendered = { id: null, n: 0 }; return; }
+  $('#out-head').replaceChildren(h('span', { class: 'mono' }, cmd.label), ' ', statusChip(cmd), cmd.ended ? ` ${(cmd.ended - cmd.started).toFixed(1)} s` : '');
+  const lines = S.out[cmd.id] || [];
+  const nearBottom = out.scrollHeight - out.scrollTop - out.clientHeight < 40;
+  if (force || S.rendered.id !== cmd.id || lines.length < S.rendered.n) { out.replaceChildren(); S.rendered = { id: cmd.id, n: 0 }; }
+  const frag = document.createDocumentFragment();
+  for (let i = S.rendered.n; i < lines.length; i++) frag.append(h('span', { class: lines[i][0] }, lines[i][1] + '\n'));
+  out.append(frag); S.rendered.n = lines.length;
+  if (nearBottom || force) out.scrollTop = out.scrollHeight;
+}
+
+// ---------------------------------------------------------------- free command forms
+const FREE = [
+  { cmd: 'status', help: 'Spend, circuits and CSVs, as the kit prints them.', fields: [] },
+  { cmd: 'info', help: 'Free circuit facts (qubits, gate counts, depths). Updates work/circuits.json.', fields: [{ n: 'circuits', t: 'text', label: 'Circuits (space separated)', ph: 'e.g. S1 S2 G1 G2' }] },
+  { cmd: 'points', help: "Record a circuit's points from the Problems tab.", fields: [{ n: 'circuit', t: 'circuit' }, { n: 'points', t: 'text', label: 'Points', ph: 'e.g. 300' }] },
+  { cmd: 'describe', help: 'Structure of an open sample (needs its QASM in work/qasm/).', fields: [{ n: 'circuit', t: 'circuit' }, { n: 'show', t: 'text', label: 'Files to show', def: '2' }] },
+  { cmd: 'exact', help: 'Exact answers for an open sample, computed on this Mac. Writes <circuit>__exact_local.csv.', fields: [{ n: 'circuit', t: 'circuit' }] },
+  { cmd: 'local', help: 'Free local approximate run on an open sample, to learn trends.', fields: [{ n: 'circuit', t: 'circuit' }, { n: 'method', t: 'select', opts: ['pp', 'mps'], label: 'Method' },
+    { n: 'chi', t: 'text', label: 'chi (mps)', def: '32' }, { n: 'th', t: 'text', label: 'th (pp)', def: '0.01' }] },
+  { cmd: 'estimate', help: 'Free cost estimate for the whole circuit. A floor: it may ignore chi and threshold.', fields: [{ n: 'circuit', t: 'circuit' }, { n: 'device', t: 'device' }] },
+  { cmd: 'candidates', help: 'Every CSV for a circuit with corr² vs exact and pairwise agreement.', fields: [{ n: 'circuit', t: 'circuit' }] },
+  { cmd: 'validate', help: 'READY or NOT READY for upload (IDs, count, finite values). Exit 1 means not ready.', fields: [{ n: 'circuit', t: 'circuit' }, { n: 'file', t: 'file', label: 'File' }] },
+  { cmd: 'score', help: 'corr² between any two CSVs.', fields: [{ n: 'circuit', t: 'circuit', label: 'Circuit (filters the file lists)', filterOnly: true }, { n: 'a', t: 'file', label: 'File A' }, { n: 'b', t: 'file', label: 'File B' }] },
+  { cmd: 'build', help: 'Rebuild a CSV from finished ledger rows. Fill missing writes a _partial file using the mean.', fields: [{ n: 'circuit', t: 'circuit' }, { n: 'tag', t: 'tag', label: 'Setting tag' },
+    { n: 'fill_missing', t: 'check', label: 'Fill missing qubits with the mean (--fill-missing)' }] },
+  { cmd: 'blend', help: 'z-score and mix 2 or more CSVs of one circuit. Refused if the output file already exists.', fields: [{ n: 'circuit', t: 'circuit' }, { n: 'files', t: 'files', label: 'Files' },
+    { n: 'weights', t: 'text', label: 'Weights (optional, one per file)', ph: 'e.g. 2,1' }, { n: 'name', t: 'text', label: 'Output name (optional)', ph: 'e.g. blend_custom' }] },
+  { cmd: 'rehearsal-score', rehearsalOnly: true, help: 'Rehearsal only: what the site would show for a practice file.', fields: [{ n: 'circuit', t: 'circuit' }, { n: 'file', t: 'file', label: 'File' }] },
+];
+
+function setOptions(sel, items, groups) {
+  const sig = JSON.stringify(items);
+  if (sel.dataset.sig === sig) return;
+  const keep = sel.value;
+  sel.dataset.sig = sig; sel.replaceChildren();
+  if (!items.length) { sel.append(h('option', { value: '' }, 'no CSVs')); return; }
+  if (groups) {
+    const by = {};
+    for (const it of items) (by[it.group] = by[it.group] || []).push(it);
+    for (const [g, its] of Object.entries(by)) sel.append(h('optgroup', { label: g }, its.map((it) => h('option', { value: it.value }, it.label))));
+  } else for (const it of items) sel.append(h('option', { value: it.value }, it.label));
+  if (items.some((it) => it.value === keep)) sel.value = keep;
+}
+function csvItems(circuit) {
+  const all = (S.st ? S.st.csvs : []).filter((f) => f.pickable && (!circuit || f.circuit === circuit));
+  return all.map((f) => ({ value: f.file, label: circuit ? f.tag : f.base, group: f.circuit }));
+}
+
+function buildFreeForms() {
+  const grid = $('#free-grid'); grid.replaceChildren();
+  const rehearsal = S.st && S.st.mode === 'rehearsal';
+  for (const spec of FREE) {
+    if (spec.rehearsalOnly && !rehearsal) continue;
+    const fields = {}, refreshers = [];
+    const form = h('form', { class: 'card', autocomplete: 'off' }, h('h4', null, h('code', null, spec.cmd)), h('p', { class: 'help' }, spec.help));
+    const circuitVal = () => (fields.circuit ? fields.circuit.get() : '');
+    for (const f of spec.fields) {
+      let el, get, wrap;
+      if (f.t === 'circuit') { el = h('input', { list: 'dl-circuits', placeholder: 'e.g. G1' }); get = () => el.value.trim(); wrap = h('label', { class: 'f' }, f.label || 'Circuit', el); el.addEventListener('input', () => refreshers.forEach((r) => r())); }
+      else if (f.t === 'text') { el = h('input', { placeholder: f.ph || '' }); if (f.def) el.value = f.def; get = () => el.value.trim(); wrap = h('label', { class: 'f' }, f.label, el); }
+      else if (f.t === 'device') { el = h('select', null, DEVICES.map((d) => h('option', { value: d }, d))); get = () => el.value; wrap = h('label', { class: 'f' }, 'Device', el); }
+      else if (f.t === 'select') { el = h('select', null, f.opts.map((o) => h('option', { value: o }, o))); get = () => el.value; wrap = h('label', { class: 'f' }, f.label, el); }
+      else if (f.t === 'check') { el = h('input', { type: 'checkbox' }); get = () => el.checked; wrap = h('label', { class: 'chk' }, el, h('span', null, f.label)); }
+      else if (f.t === 'file') { el = h('select'); get = () => el.value; wrap = h('label', { class: 'f' }, f.label, el); refreshers.push(() => { const c = circuitVal(); setOptions(el, csvItems(c), !c); }); }
+      else if (f.t === 'files') {
+        el = h('div', { class: 'filelist' }); get = () => [...el.querySelectorAll('input:checked')].map((i) => i.value);
+        wrap = h('div', null, h('div', { class: 'small muted' }, f.label), el);
+        refreshers.push(() => {
+          const items = csvItems(circuitVal()); const sig = JSON.stringify(items); if (el.dataset.sig === sig) return;
+          const keep = new Set(get()); el.dataset.sig = sig; el.replaceChildren();
+          if (!items.length) el.append(h('div', { class: 'small muted' }, 'Type a circuit to list its CSVs.'));
+          for (const it of items) el.append(h('label', { class: 'chk' }, h('input', { type: 'checkbox', value: it.value, checked: keep.has(it.value) }), h('span', { class: 'mono small' }, it.label)));
+        });
+      } else if (f.t === 'tag') {
+        const id = 'dl-tag-' + spec.cmd; const dl = h('datalist', { id }); el = h('input', { list: id, placeholder: 'e.g. mps.cpu_chi64' }); get = () => el.value.trim();
+        wrap = h('label', { class: 'f' }, f.label, el, dl);
+        refreshers.push(() => { const tags = (S.st && S.st.tags[circuitVal()]) || []; const sig = JSON.stringify(tags); if (dl.dataset.sig === sig) return; dl.dataset.sig = sig; dl.replaceChildren(...tags.map((t) => h('option', { value: t }))); });
+      }
+      if (!f.filterOnly) fields[f.n] = { get, el }; else fields.circuit = { get, el, filterOnly: true };
+      form.append(wrap);
+    }
+    const btn = h('button', { class: 'btn primary', type: 'submit' }, 'Run ' + spec.cmd);
+    const out = h('div');
+    form.append(h('div', { class: 'btns' }, btn), out);
+    form.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      const args = {}; for (const [k, fd] of Object.entries(fields)) if (!fd.filterOnly) args[k] = fd.get();
+      btn.disabled = true;
+      try { const r = await api('/api/cmd', { cmd: spec.cmd, args }); msg(out, ''); openCmd(r.cmd); }
+      catch (e) { msg(out, e.message); }
+      finally { btn.disabled = false; }
+    });
+    S.forms[spec.cmd] = { form, fields, refresh: () => refreshers.forEach((r) => r()) };
+    grid.append(form);
+  }
+}
+function refreshForms(st) {
+  const dl = $('#dl-circuits'); const names = st.circuits.map((c) => c.name); const sig = JSON.stringify(names);
+  if (dl.dataset.sig !== sig) { dl.dataset.sig = sig; dl.replaceChildren(...names.map((n) => h('option', { value: n }))); }
+  for (const f of Object.values(S.forms)) f.refresh();
+  refreshLog();
+  const cap = $('#run-cap'); if (!cap.value && !cap.dataset.touched) cap.value = String(st.default_cap);
+}
+async function runFree(cmd, args) {
+  try { const r = await api('/api/cmd', { cmd, args }); openCmd(r.cmd); }
+  catch (e) { setDrawer(true); $('#out-head').replaceChildren(ico('crit'), e.message); }
+}
+function prefillFree(cmd, values) {
+  setView('actions'); const f = S.forms[cmd]; if (!f) return;
+  for (const [k, v] of Object.entries(values)) if (f.fields[k]) f.fields[k].el.value = v;
+  f.refresh(); f.form.scrollIntoView({ behavior: 'smooth', block: 'center' }); f.form.querySelector('input,select').focus();
+}
+
+// ---------------------------------------------------------------- paid run
+for (const d of DEVICES) $('#run-device').append(h('option', { value: d }, d));
+$('#run-cap').addEventListener('input', (e) => { e.target.dataset.touched = '1'; });
+function addOpt(key, value) {
+  const row = h('div', { class: 'optrow' });
+  const k = h('select', null, OPT_KEYS.map((o) => h('option', { value: o }, o))); if (key) k.value = key;
+  const v = h('input', { placeholder: 'value, like 64 or 1e-3', inputmode: 'decimal' }); if (value) v.value = value;
+  row.append(k, v, h('button', { type: 'button', class: 'btn sm', onclick: () => row.remove() }, 'Remove'));
+  $('#run-opts').append(row);
+}
+$('#run-addopt').addEventListener('click', () => addOpt());
+function prefillRun(circuit) {
+  setView('actions'); $('#run-circuit').value = circuit;
+  $('#run-card').scrollIntoView({ behavior: 'smooth', block: 'start' }); $('#run-device').focus();
+}
+$('#run-form').addEventListener('submit', async (ev) => {
+  ev.preventDefault();
+  const opts = [...document.querySelectorAll('#run-opts .optrow')].map((r) => ({ key: r.querySelector('select').value, value: r.querySelector('input').value.trim() }));
+  const body = { circuit: $('#run-circuit').value.trim(), device: $('#run-device').value, opts, qubits: $('#run-qubits').value.trim(),
+    max_cost: $('#run-cap').value.trim(), no_wait: $('#run-nowait').checked };
+  const btn = $('#run-check'); btn.disabled = true;
+  msg($('#run-msg'), 'Getting the estimate from the kit...', 'info');
+  try { const p = await api('/api/run/prepare', body); msg($('#run-msg'), ''); renderPanel(p); }
+  catch (e) { msg($('#run-msg'), e.message); clearPanel(); }
+  finally { btn.disabled = false; }
+});
+function clearPanel() { if (S.panel) api('/api/run/cancel', { nonce: S.panel.nonce }).catch(() => {}); S.panel = null; $('#run-panel').replaceChildren(); }
+function renderPanel(p, errText) {
+  S.panel = p;
+  const live = S.st && S.st.mode === 'live';
+  const host = $('#run-panel');
+  const qtxt = p.count == null ? 'unknown (circuit size not known yet)' : `${p.count}` + (p.n ? ` of ${p.n}` : '') + (p.done_count ? ` (${p.done_count} already done for this setting, skipped)` : '');
+  const estTxt = p.est_run == null ? 'not available' : fmt.usd(p.est_run) + ' for the qubits that will run';
+  const estSub = [p.est_per != null ? `${fmt.cost(p.est_per)} per qubit` : '', p.est_full != null ? `whole circuit ${fmt.usd(p.est_full)}` : ''].filter(Boolean).join(', ');
+  const capSub = p.no_wait ? 'Enforced up front: the kit projects the run and sends only the qubits that fit (real prices if any jobs at this setting have finished, otherwise the estimate).' : 'Enforced per batch: the kit prices each batch before sending it (1 qubit first at a new setting) and stops before the cap.';
+  const worst = p.spent + Math.max(p.est_run || 0, p.cap);
+  const meter = h('div', { class: 'meter', style: 'max-width:520px' });
+  const pc = (v) => Math.min(100, p.budget > 0 ? (v / p.budget) * 100 : 100);
+  meter.append(h('div', { class: 'proj', style: `left:0;width:${pc(worst)}%` }), h('div', { class: 'fill' + (pc(p.spent) >= 80 ? ' warn' : ''), style: `width:${pc(p.spent)}%` }), h('div', { class: 'tick', style: 'left:80%' }));
+  const typed = h('input', { class: 'typed', placeholder: p.circuit, 'aria-label': 'Type the circuit name to confirm', autocomplete: 'off', spellcheck: 'false' });
+  const go = h('button', { class: 'btn ' + (live ? 'spend' : 'primary'), type: 'button' }, live ? `Spend money: run ${p.circuit}` : `Run ${p.circuit} (rehearsal)`);
+  const out = h('div');
+  if (p.need_typed) { go.disabled = true; typed.addEventListener('input', () => { go.disabled = typed.value.trim() !== p.circuit; }); }
+  go.addEventListener('click', async () => {
+    go.disabled = true;
+    try {
+      const r = await api('/api/run/confirm', { nonce: p.nonce, typed: p.need_typed ? typed.value : '' });
+      S.panel = null; host.replaceChildren(h('div', { class: 'msg ok' }, `Started: ${p.command}. Output is in the console.`)); openCmd(r.cmd);
+    } catch (e) {
+      if (e.data && e.data.panel) renderPanel(e.data.panel, e.message);
+      else if (e.data && e.data.stale) { S.panel = null; host.replaceChildren(h('div', { class: 'msg' }, e.message)); }
+      else { msg(out, e.message); go.disabled = p.need_typed && typed.value.trim() !== p.circuit; }
+    }
+  });
+  const card = h('div', { class: 'card confirm' + (live ? ' live' : '') },
+    h('h3', null, live ? 'Confirm paid run (LIVE, real money)' : 'Confirm run (rehearsal)'),
+    h('div', { class: 'mono', style: 'user-select:all' }, p.command),
+    h('dl', { class: 'kv' },
+      h('dt', null, 'Setting tag'), h('dd', { class: 'mono' }, p.tag),
+      h('dt', null, 'Qubits to run'), h('dd', null, qtxt),
+      h('dt', null, 'Estimate (a floor)'), h('dd', null, h('strong', null, estTxt), estSub ? ` (${estSub})` : '',
+        h('div', { class: 'small muted' }, 'The kit says the estimate may ignore chi and threshold. Treat it as a floor, not a price.'),
+        p.est_note ? h('div', { class: 'small' }, ico('warn'), p.est_note) : ''),
+      h('dt', null, 'Cap (--max-cost)'), h('dd', null, h('strong', null, fmt.usd(p.cap, 2)), h('div', { class: 'small muted' }, capSub)),
+      h('dt', null, 'Spent so far'), h('dd', null, `${fmt.usd(p.spent)} of ${fmt.usd(p.budget, 2)} budget`),
+      h('dt', null, 'Budget after this run'), h('dd', null, `${fmt.pct(p.pct_after_est)} at the estimate; ${fmt.pct(p.pct_after_cap)} if it reaches the cap. 80% line = ${fmt.usd(p.warn_line, 2)}.`, meter)),
+    p.need_typed ? h('div', null, h('div', null, ico('warn'), h('strong', null, `Type ${p.circuit} to confirm, because:`)),
+      h('ul', { class: 'reasons' }, p.reasons.map((r) => h('li', null, '• ' + r))), typed) : h('p', { class: 'small muted' }, 'Inside the cap, the ask-David line and the 80% line. No typed confirmation needed.'),
+    h('div', { class: 'btns', style: 'margin-top:10px' }, go, h('button', { class: 'btn', type: 'button', onclick: clearPanel }, 'Cancel'),
+      h('span', { class: 'small muted' }, `This check expires at ${fmt.clock(p.expires)}. The server re-checks spend, budget and the job slot when you confirm.`)),
+    errText ? h('div', { class: 'msg' }, errText) : '', out);
+  host.replaceChildren(card);
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  if (p.need_typed) typed.focus();
+}
+
+// ---------------------------------------------------------------- collect
+$('#collect-btn').addEventListener('click', async () => {
+  const b = $('#collect-btn'); b.disabled = true;
+  try { const r = await api('/api/cmd', { cmd: 'collect', args: {} }); msg($('#collect-msg'), ''); openCmd(r.cmd); }
+  catch (e) { msg($('#collect-msg'), e.message); }
+  finally { b.disabled = false; }
+});
+
+// ---------------------------------------------------------------- log an upload
+function refreshLog() {
+  const c = $('#log-circuit').value.trim();
+  setOptions($('#log-file'), csvItems(c), !c);
+  const u = (S.st && S.st.uploads[c]) || { used: 0 };
+  const max = S.st ? S.st.max_uploads : 10;
+  $('#log-preview').replaceChildren(!c ? 'Pick a circuit.' : u.used >= max ? h('span', null, ico('warn'), `${c} has used all ${max} uploads.`) : `This will be upload ${u.used + 1} of ${max} for ${c}.`);
+}
+$('#log-circuit').addEventListener('input', refreshLog);
+function prefillLog(circuit, file) {
+  setView('actions'); $('#log-circuit').value = circuit; refreshLog();
+  if (file) $('#log-file').value = file;
+  $('#log-card').scrollIntoView({ behavior: 'smooth', block: 'center' }); $('#log-score').focus();
+}
+$('#log-form').addEventListener('submit', async (ev) => {
+  ev.preventDefault();
+  const body = { circuit: $('#log-circuit').value.trim(), file: $('#log-file').value, score: $('#log-score').value.trim(), note: $('#log-note').value };
+  try {
+    const r = await api('/api/upload-log', body);
+    msg($('#log-msg'), `Logged upload ${r.upload} for ${body.circuit} in work/submissions.md.`, 'ok');
+    $('#log-score').value = ''; $('#log-note').value = ''; tick();
+  } catch (e) { msg($('#log-msg'), e.message); }
+});
+
+// ---------------------------------------------------------------- polling
+// Links like #S3, #jobs, #docs/tuning or #actions open that view directly.
+function fromHash() {
+  const raw = decodeURIComponent(location.hash.slice(1));
+  if (!raw) return;
+  const [v, arg] = raw.split('/');
+  if (['jobs', 'docs', 'actions', 'circuits'].includes(v)) { if (v === 'docs' && arg) S.doc = arg; setView(v); }
+  else if (/^[A-Za-z0-9]+$/.test(v)) { S.circuit = v; S.detailSig = ''; setView('circuits'); }
+}
+window.addEventListener('hashchange', fromHash);
+fromHash();
+
+let built = false;
+async function tick() {
+  try {
+    const st = await api('/api/state');
+    S.st = st; connProblem(null);
+    if (!built) { buildFreeForms(); built = true; }
+    renderTop(st); renderCircuits(st); refreshForms(st);
+    if (!S.cmds.length && st.commands.length) S.cmds = st.commands;
+  } catch (e) { connProblem(e); return; }
+  if (S.view === 'circuits' && S.circuit) loadDetail();
+  if (S.view === 'jobs') loadJobs();
+  if (S.view === 'docs') loadDoc();
+}
+tick();
+setInterval(tick, 5000);
+pollConsole();
+</script>
+</body>
+</html>

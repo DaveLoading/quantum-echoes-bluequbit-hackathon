@@ -1,0 +1,17 @@
+<section id="system" class="dark">
+<div class="head"><p class="eyebrow">How it ran</p><h2>The system behind the runs</h2></div>
+<div class="flow">
+<div class="node you rise" style="--i:1"><p class="node-role">human</p><p class="node-title">David</p><p class="node-body">Tells both Claude sessions what to run and what to write, sets the guardrails, pushes when a score stalls.</p></div>
+<x-connector head="end" class="link"></x-connector>
+<div class="node rise" style="--i:2"><p class="node-role">Claude session</p><p class="node-title">Fable 5.2</p><p class="node-body">Strategy. Picks what runs by writing lines into a task file, and made the uploads from Saturday evening on.</p></div>
+<x-connector head="both" class="link"></x-connector>
+<div class="node rise" style="--i:3"><p class="node-role">Claude Code</p><p class="node-title">Captain</p><p class="node-body">Runs the scheduler, collects results, builds and checks every CSV, logs each step.</p></div>
+<x-connector head="end" class="link"></x-connector>
+<div class="node rise" style="--i:4"><p class="node-role">toolkit</p><p class="node-title">bq_kit.py</p><p class="node-body">The only door to BlueQubit: price checks, budget ledger, qubit order, one submitter.</p></div>
+<x-connector head="end" class="link"></x-connector>
+<div class="node rise" style="--i:5"><p class="node-role">cloud</p><p class="node-title">BlueQubit</p><p class="node-body">Free tier: 5 job slots running exact, MPS and Pauli-path engines.</p></div>
+</div>
+<div class="band rise" style="--i:6"><p class="band-text">Inspired by Javier Mancilla’s city of agents that code quantum computing. The night before, 4 specialist agents rehearsed the pipeline: 5 of 5 at corr² 1.0000.</p></div>
+<p class="foot">Quantum Echoes · David</p>
+<aside>About 45 seconds. Here’s how the work was split. I told both Claude sessions what to run and what to write: which problems and settings to run, which retries to push, and the handoffs, records and write-ups. I also set the goals and the rules: ask me before any run over $2, and only upload a problem when it should clear 70% of its points. Fable, one Claude session, did the strategy: it chose what to run by writing lines into a task file, and from Saturday evening on it made the uploads; the captain made the first five. The captain, Claude Code in my terminal, held the API token and ran a scheduler that kept BlueQubit’s 5 job slots busy all night, collected results, and built and checked every file. Every call went through one toolkit that checks prices, keeps a spend ledger and handles qubit order. The idea came from Javier Mancilla’s city of agents that code quantum computing: I wanted to see what a small crew of agents could do on a real quantum estimation problem. The night before, four specialist agents rehearsed the whole pipeline on practice circuits.</aside>
+</section>

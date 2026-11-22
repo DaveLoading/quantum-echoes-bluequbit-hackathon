@@ -1,0 +1,10 @@
+G4 mps.cpu_chi64 21
+G2 mps.cpu_chi64 17
+G2 mps.cpu_chi32 17
+G2 mps.cpu_chi30 23
+G2 mps.cpu_chi28 23
+G3 pauli-path.gpu_th0.0001 15
+G4 pauli-path.gpu_th0.0001 21
+G4 pauli-path_level1_th5e-05 30
+G4 pauli-path_level1_th5e-05 24
+G4 pauli-path.gpu_th5e-05 21

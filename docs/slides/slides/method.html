@@ -1,0 +1,10 @@
+<section id="method">
+<div class="head"><p class="eyebrow">Finding 3 · how we chose</p><h2>Testing methods on held-out runs</h2></div>
+<div class="row">
+<div class="card rise" style="--i:1"><h3>Limits live per qubit</h3><p class="body">The kit priced every run on qubit 0, whose floor was 7e-5. Checked one by one, 14 qubits accepted 3e-5 and 6 more went below 7e-5.</p></div>
+<div class="card rise" style="--i:2"><h3>Hold out a run</h3><p class="body">Predict a finer run from coarser ones, then compare. On G4, log-linear missed by 0.0039 and a straight line by 0.0055. On G2, a plain mean beat any trend.</p></div>
+<div class="card rise" style="--i:3"><h3>No probing</h3><p class="body">Site scores never chose a weight or a value. Each upload was one method or a stated extrapolation.</p></div>
+</div>
+<p class="foot">Quantum Echoes · David</p>
+<aside>About 40 seconds. Third: how we chose methods without cheating. BlueQubit’s minimum pruning threshold turned out to be set per qubit. Our kit had only ever asked about qubit 0, so it had hidden finer settings on 20 qubits; one small fix opened them up. To pick between extrapolation forms, we held out a finer run and checked which form predicted it best, and on G2 that test said a plain average beats any trend. No site score was ever used to set a weight or a value.</aside>
+</section>

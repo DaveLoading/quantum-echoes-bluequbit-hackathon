@@ -1,0 +1,21 @@
+<section id="levels">
+<div class="head"><p class="eyebrow">Finding 1 · G3 and G4</p><h2>Exact zeros meant “not seen”</h2></div>
+<p class="lede">Pauli-path prunes small branches. At transpilation levels 0 and 1 it pruned whole qubits to exactly 0.0000. Level 3 simplifies the circuit first and kept them.</p>
+<div class="split">
+<table class="tbl rise" style="--i:1">
+<tr><th style="width:28%">G3 qubit</th><th style="width:36%">Levels 0 and 1</th><th style="width:36%">Level 3</th></tr>
+<tr><td>q6</td><td>≈ 0</td><td>−0.618</td></tr>
+<tr><td>q7</td><td>≈ 0</td><td>−0.614</td></tr>
+<tr><td>q28</td><td>≈ 0</td><td>+0.508</td></tr>
+<tr><td>q3</td><td>+0.932</td><td>+0.873</td></tr>
+<tr><td>q8</td><td>+0.586</td><td>+0.414</td></tr>
+</table>
+<div class="side rise" style="--i:2">
+<p class="result">G3: 320 → 720</p>
+<p class="result">G4: 400 → 700</p>
+<p class="lede">One setting, worth 700 points across two problems.</p>
+</div>
+</div>
+<p class="foot">Quantum Echoes · David</p>
+<aside>About 45 seconds. First finding. Pauli-path follows the measured operator backward through the circuit, like a family tree, and prunes branches below a threshold. On G3 our first upload had 29 of 36 values at exactly zero, and it scored 80. Those zeros meant the method had lost track of those qubits. Asking BlueQubit to simplify the circuit first, transpilation level 3, brought qubits 6, 7 and 28 back at about minus 0.6, minus 0.6 and plus 0.5. G3 went from 320 to 720, and the same switch took G4 from 400 to 700. The practice sample had made level 3 look worse, which is why we found it late.</aside>
+</section>

@@ -1,0 +1,13 @@
+<section id="steer">
+<div class="head"><p class="eyebrow">The human in the loop</p><h2>How I steered the agent team</h2></div>
+<div class="calls">
+<div class="call rise" style="--i:1"><p class="call-tag">Strategy</p><p class="call-title">Targets from the scoring</p><p class="call-body">Floored corr² pays only on bucket jumps, so I set G3 → 800, G4 → 900, total ≥ 2700, and uploads only above 0.7.</p></div>
+<div class="call rise" style="--i:2"><p class="call-tag">Strategy</p><p class="call-title">Read the leaderboard</p><p class="call-body">Teams at 2720 had our score plus a perfect G2, so I sent the last push at G2’s MPS truncation.</p></div>
+<div class="call rise" style="--i:3"><p class="call-tag">Strategy</p><p class="call-title">Designed the team</p><p class="call-body">One strategist, one runner, one API gateway with a spend ledger and a $2 cap: 761 jobs across 5 slots.</p></div>
+<div class="call tech rise" style="--i:4"><p class="call-tag">Technical</p><p class="call-title">Truncation as noise</p><p class="call-body">I asked for ZNE-style options: Richardson builds from each qubit’s finest runs, with fits picked by hold-out runs.</p></div>
+<div class="call tech rise" style="--i:5"><p class="call-tag">Technical</p><p class="call-title">Limits per qubit</p><p class="call-body">Pushing G4 to 900 exposed per-observable threshold floors, so 20 qubits ran finer, at 3e-5 to 5e-5.</p></div>
+<div class="call tech rise" style="--i:6"><p class="call-tag">Technical</p><p class="call-title">Pressure-test hardware</p><p class="call-body">1,956 to 7,296 CZ at 0.1 to 0.3% error leaves 14% to under 0.1% of the signal, so we stayed classical.</p></div>
+</div>
+<p class="foot">Quantum Echoes · David</p>
+<aside>About 50 seconds. This is where I put in the work. Strategy first. The site floors corr² to the nearest tenth, so only bucket jumps pay, and I set targets that way: G3 to 800, G4 to 900, the total past 2700, and no upload unless it should clear 0.7. When the board showed teams at 2720, I read that as our score plus a perfect G2 and sent the last push there, at G2’s MPS truncation. I also designed the team: one strategist, one runner, and one gateway to BlueQubit with a spend ledger and a $2 cap. On the technical side, I pushed the noise angle: treat Pauli-path truncation like noise, which led to Richardson builds from each qubit’s finest runs, with the fit chosen on held-out runs. Pushing G4 to 900 is what exposed that the threshold floor is set per qubit, so 20 qubits could run finer. And I had us pressure-test real hardware: at 2,000 to 7,300 two-qubit gates the signal doesn’t survive the noise, so we stayed classical. The agents gave me speed; the calls were mine.</aside>
+</section>

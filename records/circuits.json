@@ -1,0 +1,86 @@
+{
+  "S1": {
+    "num_qubits": 4,
+    "count_ops": {
+      "cz": 192,
+      "u3": 864,
+      "x": 2,
+      "z": 1
+    },
+    "depth_1q": 404,
+    "depth_2q": 120,
+    "points": 100
+  },
+  "S2": {
+    "num_qubits": 16,
+    "count_ops": {
+      "cz": 1440,
+      "u3": 3840,
+      "x": 2,
+      "z": 1
+    },
+    "depth_1q": 257,
+    "depth_2q": 192,
+    "points": 100
+  },
+  "S3": {
+    "num_qubits": 25,
+    "count_ops": {
+      "cz": 936,
+      "u3": 7596,
+      "x": 2,
+      "z": 1
+    },
+    "depth_1q": 556,
+    "depth_2q": 124,
+    "points": 100
+  },
+  "G1": {
+    "num_qubits": 30,
+    "count_ops": {
+      "cz": 5220,
+      "u3": 13920,
+      "x": 2,
+      "z": 1
+    },
+    "depth_1q": 483,
+    "depth_2q": 360,
+    "points": 300
+  },
+  "G2": {
+    "num_qubits": 36,
+    "count_ops": {
+      "cz": 7296,
+      "u3": 21568,
+      "x": 4,
+      "z": 1
+    },
+    "depth_1q": 1600,
+    "depth_2q": 576,
+    "points": 600
+  },
+  "G3": {
+    "num_qubits": 36,
+    "count_ops": {
+      "cz": 1512,
+      "u3": 14920,
+      "x": 2,
+      "z": 1
+    },
+    "depth_1q": 764,
+    "depth_2q": 176,
+    "points": 800
+  },
+  "G4": {
+    "num_qubits": 38,
+    "count_ops": {
+      "cz": 1956,
+      "u3": 6736,
+      "x": 2,
+      "z": 1
+    },
+    "depth_1q": 203,
+    "depth_2q": 120,
+    "points": 1000
+  }
+}

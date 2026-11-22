@@ -1,0 +1,24 @@
+<section id="hybrid" class="dark tight">
+<div class="head"><p class="eyebrow">Finding 4 · G2</p><h2>Two methods, each where it holds</h2></div>
+<p class="lede">G2 is a 36-qubit chain. MPS keeps a compressed copy of the state and handles most of it, at the free tier’s chi 24 cap. Four qubits in the middle needed Pauli-path.</p>
+<div class="strip rise" style="--i:1">
+<div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+<div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+<div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+<div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell pp"></div><div class="cell pp"></div>
+<div class="cell pp"></div><div class="cell pp"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+<div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+</div>
+<div class="strip-labels">
+<p class="qlab" style="left:0; width:400px">MPS · q0 to q21</p>
+<p class="qlab" style="left:1020px; width:400px">Pauli-path · q22 to q25</p>
+<p class="qlab" style="left:1264px; width:400px; text-align:right">MPS · q26 to q35</p>
+</div>
+<div class="row">
+<div class="mini rise" style="--i:2"><p class="mini-num">300</p><p class="mini-body">MPS chi 16 alone, on all 36 qubits</p></div>
+<div class="mini rise" style="--i:3"><p class="mini-num">0</p><p class="mini-body">Pauli-path alone: it pruned a 10-qubit block whose values sit near 0.9</p></div>
+<div class="mini win rise" style="--i:4"><p class="mini-num">540</p><p class="mini-body">The mix: MPS chi 24 on 32 qubits, Pauli-path on q22 to q25</p></div>
+</div>
+<p class="foot">Quantum Echoes · David</p>
+<aside>About 40 seconds. G2 is a 36-qubit chain. MPS, a compressed copy of the state, handles most of it, but the free tier caps its quality knob, chi, at 24. Pauli-path alone scored zero: it pruned a whole block of qubits whose true values are near 0.9. So we used each method where it held steady across settings: MPS on 32 qubits and Pauli-path on qubits 22 to 25. 300 became 540. The last tenth needs exact values, which is the limit on the next slide.</aside>
+</section>

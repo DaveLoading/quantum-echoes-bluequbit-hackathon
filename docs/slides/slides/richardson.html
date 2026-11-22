@@ -1,0 +1,43 @@
+<section id="richardson" class="dark tight">
+<div class="head"><p class="eyebrow">Finding 2 · G4</p><h2>Extrapolating the truncation away</h2></div>
+<div class="split">
+<div class="side">
+<p class="chart-cap">G4 qubit 10: ⟨Z⟩ as the Pauli-path threshold shrinks</p>
+<div class="chart rise" style="--i:1">
+<svg aria-label="G4 qubit 10 values at thresholds 2e-4, 1e-4, 8.5e-5 and 7e-5 drift from -0.012 to -0.032. A dashed straight line through 1e-4 and 7e-5 reaches -0.053 at zero. A later real run at 3e-5 measured -0.053." width="960" height="540" viewBox="0 0 960 540">
+<line x1="100" y1="30" x2="920" y2="30" stroke="#2E4170" stroke-width="2" fill="none"/>
+<line x1="100" y1="180" x2="920" y2="180" stroke="#2E4170" stroke-width="2" fill="none"/>
+<line x1="100" y1="330" x2="920" y2="330" stroke="#2E4170" stroke-width="2" fill="none"/>
+<line x1="100" y1="480" x2="920" y2="480" stroke="#2E4170" stroke-width="2" fill="none"/>
+<line x1="100" y1="30" x2="100" y2="480" stroke="#2E4170" stroke-width="2" fill="none"/>
+<polyline points="920,120 510,201.75 448.5,230.25 387,269.25 223,429" stroke="#8FB0FF" stroke-width="4" fill="none"/>
+<line x1="510" y1="201.75" x2="100" y2="426.75" stroke="#F2A33A" stroke-width="4" stroke-dasharray="14 10" fill="none"/>
+<circle cx="920" cy="120" r="10" fill="#8FB0FF"/>
+<circle cx="510" cy="201.75" r="10" fill="#8FB0FF"/>
+<circle cx="448.5" cy="230.25" r="10" fill="#8FB0FF"/>
+<circle cx="387" cy="269.25" r="10" fill="#8FB0FF"/>
+<circle cx="223" cy="429" r="12" fill="#8FB0FF" stroke="#F4F6FA" stroke-width="3"/>
+<circle cx="100" cy="426.75" r="12" fill="#14213D" stroke="#F2A33A" stroke-width="4"/>
+</svg>
+<p class="ax ax-y" style="left:0; top:13px">0</p>
+<p class="ax ax-y" style="left:0; top:163px">−0.02</p>
+<p class="ax ax-y" style="left:0; top:313px">−0.04</p>
+<p class="ax ax-y" style="left:0; top:463px">−0.06</p>
+<p class="ax ax-x" style="left:40px; top:494px">0</p>
+<p class="ax ax-x" style="left:163px; top:494px">3e-5</p>
+<p class="ax ax-x" style="left:327px; top:494px">7e-5</p>
+<p class="ax ax-x" style="left:450px; top:494px">1e-4</p>
+<p class="ax ax-x" style="left:840px; top:494px">2e-4</p>
+<p class="note-blue" style="left:270px; top:400px; width:330px">real run at 3e-5: −0.053</p>
+<p class="note-amber" style="left:112px; top:446px; width:300px">line read at 0: −0.053</p>
+</div>
+</div>
+<div class="side rise" style="--i:2">
+<p class="lede">As the pruning threshold shrinks, each value drifts steadily in one direction.</p>
+<p class="lede">So for every qubit: run two thresholds, draw the line, read it at zero. It’s zero-noise extrapolation, with truncation playing the noise.</p>
+<p class="result">G4: 700 → 800</p>
+</div>
+</div>
+<p class="foot">Quantum Echoes · David</p>
+<aside>About 50 seconds. Second finding, on G4. As the pruning threshold shrinks, each qubit’s value drifts steadily in one direction; here’s qubit 10. So we borrowed the idea behind zero-noise extrapolation, with truncation playing the role of noise: run two thresholds, draw the straight line, read it at zero. That took G4 from 700 to 800. Later we got a real run at 3e-5 on this qubit, and it landed right where the line said zero was, at minus 0.053. So the drift is real and it keeps going, which is the gap between us and 900.</aside>
+</section>

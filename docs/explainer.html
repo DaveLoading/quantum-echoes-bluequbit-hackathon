@@ -1,0 +1,666 @@
+<title>OTOC Rehearsal Walkthrough</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+/* Layout: one reading column, lab-notebook feel; numbers and commands in mono; tables scroll inside their own box */
+:root {
+  --bg: #f4f6fa;
+  --surface: #ffffff;
+  --ink: #142037;
+  --muted: #55617a;
+  --line: #d9e0eb;
+  --accent: #1d58d1;
+  --accent-soft: #e5edfc;
+  --good: #19744a;
+  --warn: #9a5a00;
+  --warn-soft: #fbf1e1;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --step-0: 1rem;
+  --step-1: 1.2rem;
+  --step-2: 1.5rem;
+  --step-3: 2.1rem;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1320; --surface: #141c2b; --ink: #e5eaf3; --muted: #9aa6bb; --line: #263147;
+    --accent: #84aaff; --accent-soft: #1a2946; --good: #5cc490; --warn: #e3a64c; --warn-soft: #2c2312;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1320; --surface: #141c2b; --ink: #e5eaf3; --muted: #9aa6bb; --line: #263147;
+  --accent: #84aaff; --accent-soft: #1a2946; --good: #5cc490; --warn: #e3a64c; --warn-soft: #2c2312;
+  color-scheme: dark;
+}
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.6;
+}
+.page {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding-block: 2.5rem 4rem;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid;
+  gap: 3rem;
+}
+header { display: grid; gap: 0.75rem; }
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+h1 { font-size: var(--step-3); line-height: 1.15; margin: 0; font-weight: 600; text-wrap: balance; }
+h2 { font-size: var(--step-2); line-height: 1.25; margin: 0; font-weight: 600; text-wrap: balance; }
+h3 { font-size: var(--step-1); margin: 0.6rem 0 0; font-weight: 600; }
+p { margin: 0; max-width: 65ch; }
+.lede { font-size: var(--step-1); max-width: 60ch; }
+section { display: grid; gap: 1rem; min-width: 0; scroll-margin-top: 1rem; }
+code, .mono { font-family: var(--font-mono); font-size: 0.88em; }
+code { background: var(--accent-soft); padding: 0.05em 0.35em; border-radius: 4px; overflow-wrap: anywhere; }
+ul, ol { margin: 0; padding-left: 1.3rem; display: grid; gap: 0.5rem; max-width: 68ch; }
+li::marker { color: var(--muted); }
+a { color: var(--accent); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.guess { font-family: var(--font-mono); font-size: 0.8em; color: var(--warn); white-space: nowrap; }
+
+.toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.5rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.toc span { color: var(--muted); font-size: 0.85rem; width: 100%; }
+.toc a {
+  font-size: 0.92rem;
+  text-decoration: none;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+}
+.toc a:hover { text-decoration: underline; }
+
+.scores {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.score { background: var(--surface); padding: 1rem; display: grid; gap: 0.15rem; min-width: 0; }
+.score b { font-family: var(--font-mono); font-weight: 500; font-size: 1.55rem; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.score span { color: var(--muted); font-size: 0.85rem; }
+@media (max-width: 640px) { .scores { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.echo { display: grid; gap: 0.6rem; }
+.echo-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
+.echo-label { font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); width: 100%; }
+.gate { font-family: var(--font-mono); font-size: 0.85rem; padding: 0.3rem 0.6rem; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); white-space: nowrap; }
+.gate.kick { border-color: var(--accent); color: var(--accent); }
+.gate.flip { border-color: var(--warn); color: var(--warn); }
+.gate.read { background: var(--accent-soft); border-color: transparent; }
+.arrow { color: var(--muted); font-family: var(--font-mono); }
+
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+th, td { text-align: left; padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font-weight: 600; color: var(--muted); font-size: 0.8rem; letter-spacing: 0.04em; text-transform: uppercase; }
+td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+td.top { color: var(--good); font-weight: 500; }
+td code { white-space: nowrap; }
+
+.split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+@media (max-width: 640px) { .split { grid-template-columns: minmax(0, 1fr); } }
+.col { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 1rem 1.1rem; display: grid; gap: 0.6rem; align-content: start; min-width: 0; }
+.col h3 { font-size: 1rem; margin: 0; }
+.col.yes h3 { color: var(--good); }
+.col.no h3 { color: var(--warn); }
+
+.agents { display: grid; gap: 1rem; }
+.agent { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 1rem 1.1rem; display: grid; gap: 0.7rem; min-width: 0; }
+.agent-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.5rem; }
+.agent-head h3 { margin: 0; font-family: var(--font-mono); font-size: 1.05rem; }
+.chip { font-family: var(--font-mono); font-size: 0.78rem; padding: 0.15rem 0.55rem; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+.chip.money { border-color: var(--warn); color: var(--warn); }
+.chip.free { border-color: var(--good); color: var(--good); }
+dl.kv { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 0.45rem 1rem; margin: 0; }
+dl.kv dt { color: var(--muted); font-size: 0.85rem; padding-top: 0.15rem; }
+dl.kv dd { margin: 0; min-width: 0; }
+dl.kv dd ol, dl.kv dd ul { gap: 0.3rem; }
+@media (max-width: 560px) { dl.kv { grid-template-columns: minmax(0, 1fr); gap: 0.15rem; } dl.kv dd { margin-bottom: 0.4rem; } }
+
+.say {
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  padding: 0.55rem 0.8rem;
+  margin-top: 0.4rem;
+  overflow-wrap: anywhere;
+}
+.verdict { background: var(--warn-soft); border-radius: 10px; padding: 0.9rem 1.1rem; max-width: none; }
+.part { font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent); letter-spacing: 0.06em; text-transform: uppercase; }
+footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+
+.chart { width: 100%; height: auto; display: block; }
+.chart .g { stroke: var(--line); stroke-width: 1; }
+.chart .t { fill: var(--muted); font: 11px var(--font-mono); }
+.chart .s { fill: none; stroke: var(--accent); stroke-width: 2.2; }
+.chart .d { fill: var(--accent); }
+.chart .a { fill: var(--ink); font: 12px var(--font-body); }
+.chart-box { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 0.8rem 0.9rem 0.4rem; overflow-x: auto; }
+.flow { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; font-family: var(--font-mono); font-size: 0.85rem; }
+.flow span { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); padding: 0.35rem 0.6rem; }
+.flow i { color: var(--muted); font-style: normal; }
+</style>
+
+<div class="page">
+  <header>
+    <div class="eyebrow">BlueQubit Midwest Quantum Hackathon · guide and rehearsal, Nov 20 2026</div>
+    <h1>OTOC Rehearsal Walkthrough</h1>
+    <p class="lede">How the setup works, what each agent does, how to read and drive the control panel, and what to type at kickoff. The rehearsal scored 1.0000 on all 5 practice circuits for $0.19, because every practice circuit was small enough to simulate exactly.</p>
+    <p>Written for the human lead (David) before the event and updated with the live results. In the setup, control panel and kickoff sections, “you” means whoever runs the kit.</p>
+  </header>
+
+  <div class="scores" role="list">
+    <div class="score" role="listitem"><b>900 / 900</b><span>graded points (G1 300, G2 600)</span></div>
+    <div class="score" role="listitem"><b>5 / 5</b><span>circuits at corr² 1.0000</span></div>
+    <div class="score" role="listitem"><b>$0.188</b><span>spent of the $5.00 practice budget</span></div>
+    <div class="score" role="listitem"><b>1 / 10</b><span>uploads used per problem</span></div>
+  </div>
+
+  <nav class="toc" aria-label="Contents">
+    <span>On this page</span>
+    <a href="#live">Live result</a>
+    <a href="#timeline">The 24 hours</a>
+    <a href="#puzzle">The puzzle</a>
+    <a href="#setup">Setup</a>
+    <a href="#commands">Kit commands</a>
+    <a href="#agents">The agents</a>
+    <a href="#panel">Control panel</a>
+    <a href="#kickoff">Kickoff day</a>
+    <a href="#results">Rehearsal results</a>
+  </nav>
+
+  <section id="live">
+    <div class="part">Live event, Nov 21 to 22 2026</div>
+    <h2>How each problem was solved</h2>
+    <p>Final total: 2660 of 3000 points, with $0 of the $30 coupon spent. Every score below is what the site showed. The best of up to 10 uploads counts per problem.</p>
+    <div class="scores" role="list">
+      <div class="score" role="listitem"><b>2660</b><span>of 3000 points</span></div>
+      <div class="score" role="listitem"><b>540 / 600</b><span>G2, 36-qubit chain</span></div>
+      <div class="score" role="listitem"><b>720 / 800</b><span>G3, 6x6 grid, Clifford gates</span></div>
+      <div class="score" role="listitem"><b>800 / 1000</b><span>G4, 6x6 grid plus 2, Echoes style</span></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Problem</th><th>Score</th><th>What worked</th><th>What it replaced</th></tr></thead>
+        <tbody>
+          <tr><td>S1 to S3, G1</td><td class="num top">600 / 600</td><td>Exact simulation. G1 has 30 qubits, small enough to track every outcome.</td><td></td></tr>
+          <tr><td>G2</td><td class="num">540 / 600</td><td>Two methods, each used where it is reliable. MPS at chi 24 for the wide segments of the chain, Pauli-path for the 4-qubit segment (qubits 22 to 25) where MPS and Pauli-path disagreed and Pauli-path held steady.</td><td>MPS chi 16 alone scored 300. Pauli-path alone scored 0: it returned exact zeros on a 10-qubit segment whose true values are near 0.9.</td></tr>
+          <tr><td>G3</td><td class="num">720 / 800</td><td>Pauli-path at threshold 1e-4 with circuit transpilation level 3, one method on all 36 qubits. Level 3 found three large values (qubits 6, 7, 28) that levels 0 and 1 cut to zero.</td><td>Levels 0 and 1 scored 320. MPS was dropped: its values flipped sign as chi changed.</td></tr>
+          <tr><td>G4</td><td class="num">800 / 1000</td><td>Pauli-path at level 3, run at thresholds 1e-4 and 7e-5. The values keep drifting one way as the threshold tightens, so each qubit's value is the straight line through those two runs, extended to zero truncation.</td><td>Level 0 and 1 at 1e-4 scored 400. Level 3 at 1e-4 or 7e-5 scored 700.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>What the event taught</h3>
+    <ul>
+      <li><strong>An exact 0.0 from Pauli-path means "the method could not see it".</strong> It does not mean the true value is zero. This cost a wasted upload on G2 and hid G3's answer for hours.</li>
+      <li><strong>Try every transpilation level early.</strong> Level 3 was the single biggest gain (G3 from 320 to 720, G4 from 400 to 700), and the sample circuit had suggested it was the worse setting.</li>
+      <li><strong>Check that a method's values hold still before trusting them.</strong> On G2 the MPS values barely moved between chi 16 and 24, so they could be combined. On G3 they flipped sign, so they were noise.</li>
+      <li><strong>A server limit can belong to one qubit.</strong> The kit priced every run using qubit 0, whose limit was a threshold of 7e-5. Other qubits accepted 3e-5.</li>
+      <li><strong>Extrapolation has a range.</strong> On G4, extending the straight-line trend to zero truncation gained 100 points. A log fit pushed to 1e-5 lost them again (700), and so did a file of measured 3e-5 values (700).</li>
+      <li><strong>The coupon was never usable.</strong> Every paid job was refused as "not enough funds" with nothing charged, so all results came from free settings.</li>
+    </ul>
+  </section>
+
+  <section id="timeline">
+    <div class="part">Live event, the 24 hours</div>
+    <h2>How the score climbed</h2>
+    <p>About 650 BlueQubit jobs, 2 Claude sessions, $0 spent. Each dot is an upload that raised the total.</p>
+    <div class="chart-box"><svg class="chart" viewBox="0 0 640 270" role="img" aria-label="Total score over the 24 hours: 600 in the first 40 minutes, 1460 by 7 PM, 2560 by 11 PM, 2660 from 9:55 AM Sunday"><line class="g" x1="52" x2="620" y1="230.0" y2="230.0"/><text class="t" x="44" y="234.0" text-anchor="end">0</text><line class="g" x1="52" x2="620" y1="159.3" y2="159.3"/><text class="t" x="44" y="163.3" text-anchor="end">1000</text><line class="g" x1="52" x2="620" y1="88.7" y2="88.7"/><text class="t" x="44" y="92.7" text-anchor="end">2000</text><line class="g" x1="52" x2="620" y1="18.0" y2="18.0"/><text class="t" x="44" y="22.0" text-anchor="end">3000</text><text class="t" x="52.0" y="250" text-anchor="middle">1 PM Sat</text><text class="t" x="194.0" y="250" text-anchor="middle">7 PM</text><text class="t" x="336.0" y="250" text-anchor="middle">1 AM</text><text class="t" x="478.0" y="250" text-anchor="middle">7 AM</text><text class="t" x="620.0" y="250" text-anchor="middle">1 PM Sun</text><path class="s" d="M52.0,230.0 H60.8 V215.9 H61.9 V208.8 H66.9 V187.6 H73.8 V181.9 H123.5 V160.7 H152.6 V143.8 H193.5 V126.8 H237.1 V98.6 H270.2 V77.4 H287.5 V49.1 H547.1 V42.0 H620.0 V42.0"/><circle class="d" cx="60.8" cy="215.9" r="3.2"/><circle class="d" cx="61.9" cy="208.8" r="3.2"/><circle class="d" cx="66.9" cy="187.6" r="3.2"/><circle class="d" cx="73.8" cy="181.9" r="3.2"/><circle class="d" cx="123.5" cy="160.7" r="3.2"/><circle class="d" cx="152.6" cy="143.8" r="3.2"/><circle class="d" cx="193.5" cy="126.8" r="3.2"/><circle class="d" cx="237.1" cy="98.6" r="3.2"/><circle class="d" cx="270.2" cy="77.4" r="3.2"/><circle class="d" cx="287.5" cy="49.1" r="3.2"/><circle class="d" cx="547.1" cy="42.0" r="3.2"/><text class="a" x="295.5" y="69.1">G3 and G4 switch to level 3: 2560</text><text class="a" x="547.1" y="32.0" text-anchor="end">G4 extrapolated: 2660</text><text class="a" x="74.9" y="205.6">S1 to S3 and G1 exact: 600</text></svg></div>
+    <h3>How the two sessions split the work</h3>
+    <div class="flow"><span>BlueQubit</span><i>→</i><span>kit ledger</span><i>→</i><span>captain</span><i>→</i><span>Fable</span><i>→</i><span>upload</span><i>→</i><span>score logged</span></div>
+    <ul>
+      <li><strong>The human lead (David)</strong> told both Claude sessions what to run and what to write, and set the rules: ask above $2 a run, and upload G2 to G4 only when they'd clear 70% of full points.</li>
+      <li><strong>Captain</strong> (Claude in this terminal) held the API token, ran the scheduler that kept BlueQubit's 5 job slots busy, collected results, built and validated files, and logged every step.</li>
+      <li><strong>Fable 5.2</strong> (a second Claude session) chose what to run by writing lines into a task file, chose what to upload, and made the uploads from Saturday evening on.</li>
+    </ul>
+    <h3>The push for 900 on G4</h3>
+    <p>The kit had priced every run on qubit 0, whose floor is 7e-5. Priced qubit by qubit, 14 qubits accepted 3e-5, 4 accepted 4e-5 and 2 accepted 5e-5. Those runs took about 30 minutes each, against about 5 at 7e-5.</p>
+    <p>The measured values agreed 0.99 with the 800 file, and a file built from them scored 700. The last 100 points probably need finer pruning than BlueQubit allows <span class="guess">[Guessing]</span>.</p>
+    <p>In the last hour, an average of G2 over chi 21 to 24 scored 540 again, and a G4 file extended from each qubit's two finest runs scored 700. A real quantum computer was ruled out: BlueQubit's quantum device gave no price on this account, and at 1,956 to 7,296 two-qubit gates, hardware noise would leave too little of the signal for near-exact values.</p>
+    <h3>Two more lessons</h3>
+    <ul>
+      <li><strong>Check caps where they're enforced.</strong> The scheduler had passed a $10 per-run cap, above the $2 rule, and the kit has no ask-first check of its own. It was set to $2 before the only paid-device try.</li>
+      <li><strong>No score fitting.</strong> Every upload was one method or a stated extrapolation, built without using site scores, to stay inside the event's rule against probing.</li>
+    </ul>
+  </section>
+
+  <section id="puzzle">
+    <div class="part">Understand</div>
+    <h2>The puzzle, the score and the methods</h2>
+    <ul>
+      <li><strong>Each qubit is a coin.</strong> ⟨Z⟩ says how hard it leans to heads: +1 is always heads, −1 always tails, 0 a fair flip. Every ID asks about one coin. <code>Midwest_G2_7</code> means qubit 7 of circuit G2.</li>
+      <li><strong>The circuit is a card trick.</strong> It shuffles the deck (U), drops dye on one card (the <code>x</code> kick on the butterfly qubit), then runs the exact same shuffle backward.</li>
+      <li>If the dye never reached qubit q, the backward shuffle puts q right back where it started and its coin reads +1. The more dye reached q, the further its ⟨Z⟩ falls from +1.</li>
+      <li><strong>The dye spreads like a ring on water</strong>, about one neighbor per layer of gates. That ring is the light cone. Qubits outside it read +1 for free.</li>
+      <li><strong>Order 2 runs the trick twice</strong> with a <code>z</code> flip on the probe qubit in between. The answer then depends on finer detail, so shortcuts lose more accuracy.</li>
+    </ul>
+    <div class="echo" aria-label="Echo circuit structure">
+      <div class="echo-row">
+        <span class="echo-label">order 1</span>
+        <span class="gate">|0…0⟩</span><span class="arrow">→</span>
+        <span class="gate">U shuffle</span><span class="arrow">→</span>
+        <span class="gate kick">x on butterfly</span><span class="arrow">→</span>
+        <span class="gate">U backward</span><span class="arrow">→</span>
+        <span class="gate read">read ⟨Z⟩ on qubit q</span>
+      </div>
+      <div class="echo-row">
+        <span class="echo-label">order 2</span>
+        <span class="gate">|0…0⟩</span><span class="arrow">→</span>
+        <span class="gate">U</span><span class="arrow">→</span>
+        <span class="gate kick">x</span><span class="arrow">→</span>
+        <span class="gate">U backward</span><span class="arrow">→</span>
+        <span class="gate flip">z on probe q</span><span class="arrow">→</span>
+        <span class="gate">U</span><span class="arrow">→</span>
+        <span class="gate kick">x</span><span class="arrow">→</span>
+        <span class="gate">U backward</span><span class="arrow">→</span>
+        <span class="gate read">read ⟨Z⟩ on q</span>
+      </div>
+    </div>
+    <h3>How the site scores you</h3>
+    <ul>
+      <li>For each circuit: corr² between your numbers and the exact ones, times that circuit's points. A negative correlation scores 0.</li>
+      <li>Scale and offset don't matter. Double every value, or add 0.3 to all of them, and corr² stays the same.</li>
+      <li>Sign and qubit order do matter. Flip the sign or shuffle the rows and the score collapses. Qubit 0 is the rightmost letter of a Pauli string, and the kit handles that.</li>
+      <li>You get 10 uploads per problem and the best one counts.</li>
+    </ul>
+    <h3>Three ways to compute it</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Method</th><th>Picture</th><th>What the setting does</th><th>Rehearsal</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>cpu</code><br>exact statevector</td>
+            <td>Track every possible outcome of all the coins at once</td>
+            <td>No setting. Memory doubles with each qubit: 24 qubits is 16.8 million numbers, 34 is 17.2 billion. <span class="guess">[Guessing]</span> the live device tops out in the low 30s.</td>
+            <td class="num top">1.0000 everywhere</td>
+          </tr>
+          <tr>
+            <td><code>mps.cpu</code><br>chi</td>
+            <td>JPEG quality knob</td>
+            <td>chi caps how much entanglement detail the compressed state keeps. Higher is sharper and slower: chi 64 ran 20 times slower than chi 16.</td>
+            <td class="num">S3 0.917 → 0.993<br>G2 0.968 at chi 64</td>
+          </tr>
+          <tr>
+            <td><code>pauli-path</code><br>th</td>
+            <td>Pruning a family tree</td>
+            <td>Follows the probe's Z backward through the gates. It branches at every gate, and any branch lighter than th gets cut. Smaller th cuts less and runs slower.</td>
+            <td class="num">S3 0.784 → 0.937</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="setup">
+    <div class="part">Set up</div>
+    <h2>Setup, step by step</h2>
+    <p>The kit is one folder on your Mac: <code>~/Downloads/bluequbit-hackathon-kit</code>. Claude Code started inside it becomes the captain, because it reads the <code>CLAUDE.md</code> in that folder and finds the 4 agents next to it.</p>
+    <ol>
+      <li><strong>Python packages.</strong> Already installed on this Mac: qiskit 2.6.2, qiskit-aer 0.18.4 and bluequbit 0.19.1b1. On a fresh machine, run <code>pip install -r requirements.txt</code>.</li>
+      <li><strong>API token.</strong> Already set in your terminal as <code>BLUEQUBIT_API_TOKEN</code>. The kit hands it to BlueQubit's SDK and never prints it. Never paste it into a chat.</li>
+      <li><strong>Mode.</strong> <code>BQ_MODE=rehearsal</code> switches the kit to the offline practice backend. Without it, the kit talks to your real account. At kickoff run <code>unset BQ_MODE</code> to be sure.</li>
+      <li><strong>Captain.</strong> <code>cd ~/Downloads/bluequbit-hackathon-kit</code>, then <code>claude</code>.</li>
+      <li><strong>Control panel.</strong> In a second terminal, in the same folder: <code>python kit/dashboard.py</code>. It opens <code>http://127.0.0.1:8765/</code> in your browser.</li>
+      <li><strong>Check.</strong> <code>python kit/bq_kit.py status</code> should print <code>mode=live prefix=Midwest spent=$0.000 of $25.00 budget</code>.</li>
+    </ol>
+    <h3>What's in the folder</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Path</th><th>What it is</th></tr></thead>
+        <tbody>
+          <tr><td><code>CLAUDE.md</code></td><td>The captain's brief: the task, the 8 rules, the 5 phases, and how to talk to you.</td></tr>
+          <tr><td><code>config.json</code></td><td>Prefix, budget and caps. The captain updates it from the kickoff notes.</td></tr>
+          <tr><td><code>.claude/agents/</code></td><td>The 4 agent briefs: circuit-scout, sample-tuner, job-runner, judge.</td></tr>
+          <tr><td><code>kit/bq_kit.py</code></td><td>The toolkit. Every BlueQubit call goes through it, so spend, file names and qubit order are handled the same way every time. Cap fix added Nov 20.</td></tr>
+          <tr><td><code>kit/bq_kit_v1.py</code></td><td>The original toolkit from before the fix. A backup; nothing uses it.</td></tr>
+          <tr><td><code>kit/dashboard.py</code>, <code>dashboard.html</code></td><td>The control panel.</td></tr>
+          <tr><td><code>kit/fake_bq.py</code>, <code>sim_local.py</code></td><td>The practice backend and the local simulators it uses.</td></tr>
+          <tr><td><code>kit/rehearsal/</code></td><td>Practice sample zips, plus <code>.hidden/</code> with the answer key, which nobody opens.</td></tr>
+          <tr><td><code>work/</code></td><td>Everything the team makes on the day. Empty now.</td></tr>
+          <tr><td><code>work_rehearsal_2026-11-20/</code></td><td>Tonight's rehearsal, archived.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>What lands in work/</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>File</th><th>Written by</th><th>Holds</th></tr></thead>
+        <tbody>
+          <tr><td><code>circuits.json</code>, <code>circuits.md</code></td><td>scout</td><td>Sizes, depths, gate counts, points and difficulty tier for every circuit.</td></tr>
+          <tr><td><code>qasm/&lt;circuit&gt;/</code></td><td>captain</td><td>The unzipped sample QASM files.</td></tr>
+          <tr><td><code>tuning.md</code></td><td>tuner</td><td>Every method and setting tried on the samples, with the recommendation.</td></tr>
+          <tr><td><code>csv/&lt;circuit&gt;__&lt;setting&gt;.csv</code></td><td>runner, tuner, judge</td><td>One file per circuit per setting, like <code>G2__mps.cpu_chi256.csv</code>. A new setting never overwrites another.</td></tr>
+          <tr><td><code>jobs.jsonl</code></td><td>the kit</td><td>Every job: circuit, qubit, setting, status, value, cost. This is the spend ledger.</td></tr>
+          <tr><td><code>picks.md</code></td><td>judge</td><td>What to upload next, why, and the method note for the form.</td></tr>
+          <tr><td><code>submissions.md</code></td><td>you, or the judge in practice</td><td>Each upload and the score the site showed.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>config.json, field by field</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Field</th><th>Now</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>prefix</code></td><td class="num">Midwest</td><td>Start of every ID, as in <code>Midwest_G1_0</code>. The kickoff notes may change it.</td></tr>
+          <tr><td><code>budget_usd</code></td><td class="num">25.0</td><td>Total live budget. The kit refuses runs past it.</td></tr>
+          <tr><td><code>default_max_cost_per_run</code></td><td class="num">2.0</td><td>The cap a run gets when it doesn't name one.</td></tr>
+          <tr><td><code>ask_david_above_usd</code></td><td class="num">2.0</td><td>Any single run estimated above this needs your yes.</td></tr>
+          <tr><td><code>max_parallel</code></td><td class="num">8</td><td>Jobs sent per batch. BlueQubit limits parallel jobs.</td></tr>
+          <tr><td><code>rehearsal_prefix</code>, <code>rehearsal_budget_usd</code></td><td class="num">Rehearsal, 5.0</td><td>Used only when <code>BQ_MODE=rehearsal</code>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="commands">
+    <h2>The kit commands</h2>
+    <p>The agents and the control panel both run these. You'll rarely type them, but every report mentions them. Free means no paid job is submitted. Each one starts with <code>python kit/bq_kit.py</code>.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Command</th><th>What it does</th><th>Cost</th></tr></thead>
+        <tbody>
+          <tr><td><code>status</code></td><td>Spend so far, every circuit and its CSVs, and jobs waiting for collect.</td><td>free</td></tr>
+          <tr><td><code>info G1 G2</code></td><td>Asks BlueQubit for qubits, gate counts and depths, and saves them.</td><td>free</td></tr>
+          <tr><td><code>points G1 300</code></td><td>Records a circuit's points from the Problems tab.</td><td>free</td></tr>
+          <tr><td><code>describe S1</code></td><td>Shows an open sample's structure: where the x and z gates sit.</td><td>free, on this Mac</td></tr>
+          <tr><td><code>exact S1</code></td><td>Exact answers for an open sample, computed on this Mac, up to 26 qubits.</td><td>free, on this Mac</td></tr>
+          <tr><td><code>local S1</code></td><td>A rough local MPS or Pauli-path run on an open sample, to learn trends.</td><td>free, on this Mac</td></tr>
+          <tr><td><code>estimate G1 --device cpu</code></td><td>BlueQubit's price per qubit and for the whole circuit. Treat it as a floor: it may ignore chi and th.</td><td>free</td></tr>
+          <tr><td><code>run G1 --device mps.cpu --opt chi=256 --max-cost 2</code></td><td>One job per qubit, results into the ledger, then a CSV. Skips qubits already done at that setting and stops at the cap.</td><td>paid</td></tr>
+          <tr><td><code>run … --no-wait</code></td><td>Submits only what fits the cap and returns. Results come later with collect.</td><td>paid</td></tr>
+          <tr><td><code>collect</code></td><td>Fetches results of jobs left running and builds their CSVs.</td><td>free</td></tr>
+          <tr><td><code>candidates G1</code></td><td>Every CSV for a circuit: corr² against exact (samples only) and agreement between each pair.</td><td>free</td></tr>
+          <tr><td><code>blend G1 a.csv b.csv</code></td><td>Z-scores each file and averages them. <code>--weights 2,1</code> favors the first.</td><td>free</td></tr>
+          <tr><td><code>validate G1 file.csv</code></td><td>READY or NOT READY: right IDs, right count, real numbers, not all equal.</td><td>free</td></tr>
+          <tr><td><code>score a.csv b.csv</code></td><td>corr² between any two files.</td><td>free</td></tr>
+          <tr><td><code>build G1 &lt;setting&gt; --fill-missing</code></td><td>Makes a CSV from a partial run, filling gaps with the mean.</td><td>free</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Options for <code>--opt</code>: <code>chi</code> is the MPS bond dimension (up to 2048 on cpu), <code>th</code> the Pauli-path threshold (1e-5 and up, required above 13 qubits), <code>level</code> the Pauli-path transpilation level, 0 to 3.</p>
+  </section>
+
+  <section id="agents">
+    <h2>The agents</h2>
+    <p>You only talk to the captain. It hands each specialist one narrow job, waits for the report, and turns it into a plan or an upload for you. Only one agent that submits jobs runs at a time, because BlueQubit limits parallel jobs.</p>
+    <div class="agents">
+      <article class="agent">
+        <div class="agent-head"><h3>captain</h3><span class="chip">the window you type into</span></div>
+        <dl class="kv">
+          <dt>When</dt><dd>The whole event.</dd>
+          <dt>Does</dt><dd><ul>
+            <li>Reads the kickoff notes and updates config.json, then tells you what changed.</li>
+            <li>Unzips the samples and runs the first one end to end itself, so the pipeline is proven in the first 30 minutes.</li>
+            <li>Sends the specialists out phase by phase and reads their reports.</li>
+            <li>Asks you before any run over $2, or before total spend passes 80%.</li>
+            <li>Tells you exactly which file to upload and the method note to paste.</li>
+          </ul></dd>
+          <dt>Writes</dt><dd><code>config.json</code>, <code>work/qasm/</code></dd>
+          <dt>Rehearsal</dt><dd>S1 end to end in under 2 seconds, scored 1.0000.</dd>
+        </dl>
+      </article>
+      <article class="agent">
+        <div class="agent-head"><h3>circuit-scout</h3><span class="chip free">spends nothing</span></div>
+        <dl class="kv">
+          <dt>When</dt><dd>Start of Phase 2, and again if new circuits appear.</dd>
+          <dt>Does</dt><dd><ol>
+            <li>Runs <code>info</code> on every circuit and <code>points</code> for each one.</li>
+            <li>On open samples, runs <code>describe</code> to confirm the shape (shuffle, kick, shuffle backward) and find the butterfly qubit.</li>
+            <li>On graded circuits, infers the order from the count of x and z gates: 1 x means order 1; 2 x plus 1 z means order 2.</li>
+            <li>Sorts every circuit into a tier: easy (up to about 26 qubits, exact works), medium (bigger but order 1 or shallow), hard (big and order 2, or deep).</li>
+          </ol></dd>
+          <dt>Writes</dt><dd><code>work/circuits.md</code>, <code>circuits.json</code></dd>
+          <dt>Rehearsal</dt><dd>3.6 minutes. All 5 circuits mapped, all 3 samples confirmed as exact mirrors.</dd>
+        </dl>
+      </article>
+      <article class="agent">
+        <div class="agent-head"><h3>sample-tuner</h3><span class="chip">spends a little, under $3</span></div>
+        <dl class="kv">
+          <dt>When</dt><dd>Phase 2, after the scout.</dd>
+          <dt>Does</dt><dd><ol>
+            <li>Computes exact answers for each open sample, so every method can be graded.</li>
+            <li>Tries each method from cheap to tight: Pauli-path th 1e-2, 3e-3, 1e-3; MPS chi 16, 64, 256. It stops a method once it reaches corr² 0.95 or the next step would cost over $0.50.</li>
+            <li>Tries one blend of the two best.</li>
+            <li>Recommends a method and setting for each tier and order.</li>
+          </ol></dd>
+          <dt>Writes</dt><dd><code>work/tuning.md</code> and the sample CSVs</dd>
+          <dt>Rehearsal</dt><dd>$0.098, about 7.5 minutes. Found exact was free and perfect at this size, MPS chi 64 the best shortcut, and blends worse every time.</dd>
+        </dl>
+      </article>
+      <article class="agent">
+        <div class="agent-head"><h3>job-runner</h3><span class="chip money">the main spender</span></div>
+        <dl class="kv">
+          <dt>When</dt><dd>Phases 3 and 4, with a list from the captain, like <span class="mono">G1 cpu cap $0.50; G2 mps.cpu chi=256 cap $2</span>.</dd>
+          <dt>Does</dt><dd><ol>
+            <li>Checks <code>status</code> and the free estimate.</li>
+            <li>Stops and reports instead of running if the run is over its cap, over $2, or would push spend past 80%.</li>
+            <li>Tries 3 qubits first when unsure how a setting behaves.</li>
+            <li>Runs exactly the list, and never raises a cap itself.</li>
+            <li>Overnight, uses <code>--no-wait</code> and leaves <code>collect</code> for the morning.</li>
+          </ol></dd>
+          <dt>Writes</dt><dd>CSVs and ledger rows</dd>
+          <dt>Rehearsal</dt><dd>88 jobs over 2 rounds, about $0.09, no failures. It also found the no-wait cap bug.</dd>
+        </dl>
+      </article>
+      <article class="agent">
+        <div class="agent-head"><h3>judge</h3><span class="chip free">spends nothing</span></div>
+        <dl class="kv">
+          <dt>When</dt><dd>After every runner round, and on Sunday for the final picks.</dd>
+          <dt>Does</dt><dd><ol>
+            <li>Runs <code>candidates</code> to see every file and how they agree.</li>
+            <li>Picks a converged single method over a blend, and blends only good with good.</li>
+            <li>Skips any file that's a near copy (agreement above 0.995) of one already uploaded, since it can't raise the score.</li>
+            <li>Runs <code>validate</code> on the pick. Only a READY file goes to you.</li>
+            <li>Writes the one or two sentence method note for the upload form.</li>
+          </ol></dd>
+          <dt>Writes</dt><dd><code>work/picks.md</code></dd>
+          <dt>Rehearsal</dt><dd>5 picks, all 5 at 1.0000.</dd>
+        </dl>
+      </article>
+    </div>
+    <h3>Steering them</h3>
+    <p>Plain sentences to the captain work. A few that will come up:</p>
+    <div class="say">go</div>
+    <div class="say">Have the judge look at G3 again with the new MPS file.</div>
+    <div class="say">Run G4 on mps.cpu at chi 512, cap $3.</div>
+    <div class="say">Pause after this circuit. What's spent and what's running?</div>
+    <p>A request over $2 comes back to you with the estimate before anything runs.</p>
+  </section>
+
+  <section id="panel">
+    <h2>The control panel</h2>
+    <p>A local web page at <code>http://127.0.0.1:8765/</code> that reads the <code>work/</code> folder every 5 seconds. Only your browser on this Mac can reach it. Start it with <code>python kit/dashboard.py</code>, or add <code>--rehearsal</code> for practice. Stop it with Ctrl-C in its terminal; if a run it started is still going, it waits for that run first.</p>
+    <h3>The top bar</h3>
+    <ul>
+      <li><strong>Mode banner.</strong> Blue REHEARSAL means offline, no money. LIVE means your real account and real money.</li>
+      <li><strong>Spend vs budget.</strong> A bar with a tick at 80% and a note about the $2 ask line.</li>
+      <li><strong>Pending jobs.</strong> Jobs waiting for collect, and how many jobs are in the ledger.</li>
+      <li><strong>Job slot.</strong> Free or busy. Busy means a run or collect is going, started by an agent or by this page. Paid runs and collect from the page are blocked while it's busy.</li>
+    </ul>
+    <h3>Circuits tab</h3>
+    <p>One row per circuit: qubits, 2q depth, order, points, number of CSVs, uploads used out of 10, and the best score you've logged. Click a row to open its detail:</p>
+    <ul>
+      <li><strong>Buttons:</strong> Run candidates, Paid run, Estimate, Log upload, and Rehearsal score in practice mode.</li>
+      <li><strong>Candidate CSVs.</strong> Every file with its corr² against exact (samples only), its highest agreement with anything already uploaded, an "uploaded" chip, and a near-duplicate warning above 0.995. Each row has Copy path, Validate and Log upload.</li>
+      <li><strong>Agreement heatmap.</strong> corr² between every pair of files; darker means closer. A blend always agrees well with its own inputs, so a dark blend cell proves nothing.</li>
+      <li><strong>Per-qubit chart.</strong> Each file's values z-scored, so scale and offset drop out just as they do in scoring. Lines that track each other agree. A mirror image means a sign flip, and a shifted pattern means a qubit-order problem.</li>
+      <li><strong>Spend on this circuit,</strong> by setting.</li>
+    </ul>
+    <h3>Jobs tab</h3>
+    <p>Spend by circuit, spend by circuit and setting, and the full ledger, newest first: time, qubit, setting, status, value, cost and job id.</p>
+    <h3>Docs tab</h3>
+    <p>circuits.md, tuning.md, picks.md and submissions.md, rendered so you can read the agents' reports without opening files.</p>
+    <h3>Actions tab</h3>
+    <ol>
+      <li><strong>Paid run.</strong> Pick the circuit, device, options (chi, th, level), qubits (blank means all) and a max cost, then press Check cost. That runs only the free estimate.</li>
+      <li><strong>The confirm panel</strong> shows the exact command, how many qubits will run (ones already done are skipped), the estimate, the cap, what's spent and where the budget lands after the run.</li>
+      <li><strong>Typing the circuit name</strong> unlocks the Run button when the estimate or cap is above $2, when spend would pass 80%, with <code>--no-wait</code>, or when no estimate came back. Otherwise one click runs it.</li>
+      <li>The check expires after 10 minutes, and the server re-checks spend, budget and the job slot at the moment you confirm.</li>
+    </ol>
+    <ul>
+      <li><strong>Collect.</strong> Gathers <code>--no-wait</code> results. Blocked while the job slot is busy.</li>
+      <li><strong>Log an upload.</strong> Circuit, file, the score the site showed and a note. It adds a row to submissions.md and refuses an 11th upload for a circuit.</li>
+      <li><strong>Free commands.</strong> A card for each of status, info, points, describe, exact, local, estimate, candidates, validate, score, build and blend.</li>
+    </ul>
+    <h3>Console</h3>
+    <p>The bar at the bottom shows the last command and its exit code. Open console to see the streamed output of everything the page ran.</p>
+    <h3>Safety built in</h3>
+    <ul>
+      <li>It listens on 127.0.0.1 only, needs a key that changes every launch, and refuses requests from other websites.</li>
+      <li>In practice mode every command it runs gets <code>BQ_MODE=rehearsal</code> and an empty token, so it can't reach your account.</li>
+      <li>It never uploads anything and never shows the token.</li>
+    </ul>
+  </section>
+
+  <section id="kickoff">
+    <div class="part">Kickoff day</div>
+    <h2>Kickoff day, step by step</h2>
+    <p>Times are Phoenix time. Kickoff is Saturday at 2:00 pm CT, which is 1:00 pm here. Your two jobs: say go, and upload.</p>
+    <ol>
+      <li><strong>12:45 pm Saturday, set up.</strong> Terminal 1, in the kit folder: <code>unset BQ_MODE</code>, then <code>claude</code>. Terminal 2, same folder: <code>python kit/dashboard.py</code>. Its banner should say LIVE with $0 spent.</li>
+      <li><strong>1:00 pm, kickoff.</strong> Download the sample zips from the event page, then paste this to the captain with the notes and the Problems tab under it:<div class="say">We're live. Kickoff notes and Problems tab below. Sample zips are in ~/Downloads. Update config.json, tell me what changed, then start Phase 1.</div></li>
+      <li><strong>By 1:30, Phase 1.</strong> The captain runs one sample end to end and gives you a file path. Upload it, then report the score so the judge never wastes one of your 10 uploads:<div class="say">S1 uploaded, site shows 0.998</div>The control panel's Log upload form does the same thing.</li>
+      <li><strong>By 3:00, Phase 2.</strong> The scout maps every circuit and the tuner grades methods on the samples. You get a one-screen plan: circuit, size, points, method, setting, cost. Reply <span class="mono">go</span>, or change it: <span class="mono">skip G4, do G5 first</span>.</li>
+      <li><strong>By 6:00, Phase 3.</strong> The runner does every graded circuit, smallest first, and the judge picks a file after each one. For each circuit you get a path and a method note: upload, paste the note into the form, report the score.</li>
+      <li><strong>Evening, Phase 4.</strong> Highest points first: tighter settings or a second method, and the judge decides whether to blend. Before bed:<div class="say">I'm going to sleep. Queue the overnight jobs.</div>The runner probes 3 qubits, collects, then submits the rest with <code>--no-wait</code>.</li>
+      <li><strong>Sunday morning.</strong><div class="say">Collect the overnight results and tell me what to upload.</div></li>
+      <li><strong>By 12:30 pm Sunday, Phase 5.</strong> The judge ranks what's left per problem and names your last uploads. No new runs after 12:30. The event ends at 1:00 pm Phoenix.</li>
+    </ol>
+    <h3>When the captain stops to ask you</h3>
+    <ul>
+      <li>Any single run estimated over $2.</li>
+      <li>Total spend about to pass 80% of the budget ($20 of $25).</li>
+      <li>Kickoff notes that change the ID prefix, the devices or the limits.</li>
+    </ul>
+    <h3>Your rules</h3>
+    <ul>
+      <li>Only you upload. The agents never touch the website.</li>
+      <li>Report every score the site shows, so the next pick builds on it.</li>
+      <li>Leave the control panel's Run button alone while the runner is working. It refuses anyway, and the captain's plan assumes it holds the job slot.</li>
+      <li>Never paste the API token into the chat. The kit reads it from the terminal.</li>
+    </ul>
+    <h3>Method checklist</h3>
+    <ol>
+      <li>For each graded circuit, run the free <code>estimate</code> on <code>cpu</code>. If the exact device takes that size at a fair price, run it first.</li>
+      <li>Too big for exact: start MPS at chi 256 or higher. Chi 64 was only 0.968 at 24 qubits.</li>
+      <li>Retune on the live samples before trusting any setting on a graded circuit.</li>
+      <li>Overnight: submit 3 qubits with <code>--no-wait</code>, run <code>collect</code>, read the real price, then submit the rest.</li>
+    </ol>
+  </section>
+
+  <section id="results">
+    <div class="part">Rehearsal results</div>
+    <h2>How the rehearsal ran</h2>
+    <ol>
+      <li><strong>Safety first.</strong> Every kit call ran with <code>BQ_MODE=rehearsal</code> and the API token blanked, so nothing could reach your real account even if the flag was forgotten.</li>
+      <li><strong>Phase 1.</strong> Unzipped the 3 sample zips, simulated S1 exactly, validated the CSV and scored it: 1.0000.</li>
+      <li><strong>Phase 2.</strong> The scout found S1 12 qubits order 1, S2 16 qubits order 2, S3 20 qubits order 2, G1 20 qubits order 1, G2 24 qubits order 2. The tuner graded every method on the samples.</li>
+      <li><strong>Phase 3.</strong> The runner ran G1 and G2 on BlueQubit's exact device, 44 jobs for $0.072. The judge validated both and rehearsal-score gave 1.0000 each.</li>
+      <li><strong>Phase 4.</strong> The runner ran MPS chi 64 on both with <code>--no-wait</code> and <code>collect</code>. It agreed 0.983 with exact on G1 and 0.968 on G2. Picks stayed on exact.</li>
+    </ol>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Circuit</th><th>File uploaded</th><th>Score</th></tr></thead>
+        <tbody>
+          <tr><td>S1</td><td><code>S1__exact_local.csv</code></td><td class="num top">1.0000</td></tr>
+          <tr><td>S2</td><td><code>S2__exact_local.csv</code></td><td class="num top">1.0000</td></tr>
+          <tr><td>S3</td><td><code>S3__exact_local.csv</code></td><td class="num top">1.0000</td></tr>
+          <tr><td>G1 (300)</td><td><code>G1__cpu.csv</code></td><td class="num top">1.0000</td></tr>
+          <tr><td>G2 (600)</td><td><code>G2__cpu.csv</code></td><td class="num top">1.0000</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Baseline: what each level would score</h3>
+    <p>The baseline is the cheapest first try the tuner starts with: Pauli-path at th 1e-2 and MPS at chi 16. S3 is the best stand-in for G2 (same depth, same order, 4 fewer qubits), so here is its full ladder against the exact answer.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Setting on S3</th><th>corr²</th><th>Seconds per qubit</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td>pauli-path th 1e-2</td><td class="num">0.784</td><td class="num">0.11</td><td>baseline</td></tr>
+          <tr><td>pauli-path th 3e-3</td><td class="num">0.868</td><td class="num">0.82</td><td></td></tr>
+          <tr><td>mps chi 16</td><td class="num">0.917</td><td class="num">0.09</td><td>baseline</td></tr>
+          <tr><td>pauli-path th 1e-3</td><td class="num">0.937</td><td class="num">6.13</td><td>slowest</td></tr>
+          <tr><td>blend of mps 64 + pauli 1e-3</td><td class="num">0.978</td><td class="num">n/a</td><td>blend hurt</td></tr>
+          <tr><td>mps chi 64</td><td class="num">0.993</td><td class="num">1.86</td><td>best shortcut</td></tr>
+          <tr><td>exact (cpu)</td><td class="num top">1.000</td><td class="num">0.24</td><td>ceiling</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>On the graded pair: exact everywhere gives 900 of 900. MPS at chi 64 alone would have given about 875 (G1 294.9 plus G2 580.5). Blending a good method with a weaker one scored below the good one on all 3 samples.</p>
+
+    <h3>How realistic is this?</h3>
+    <div class="split">
+      <div class="col yes">
+        <h3>Carries over to live</h3>
+        <ul>
+          <li>The whole pipeline: IDs, qubit order, CSV format, validate, the spend ledger, one job-submitter at a time.</li>
+          <li>The judge's lessons. A blend of good and weaker loses to the good one. Agreement between two settings of one method can mislead: S3's chi 16 and chi 64 agreed only 0.949, yet chi 64 was 0.993 accurate.</li>
+          <li>The trends. Pauli-path falls off with depth and order 2. MPS needs more chi as circuits grow.</li>
+        </ul>
+      </div>
+      <div class="col no">
+        <h3>Doesn't carry over</h3>
+        <ul>
+          <li><strong>Size.</strong> All 5 practice circuits fit exact simulation, so everything maxed out. The kit's own tiers expect live circuits past 26 qubits. <span class="guess">[Guessing]</span> until kickoff.</li>
+          <li><strong>Money.</strong> Practice prices come from a made-up formula in <code>kit/fake_bq.py</code>. Live prices come from BlueQubit.</li>
+          <li><strong>Time.</strong> Practice jobs ran on this Mac with no queue. Live jobs wait in a queue, with a parallel-job limit and GPU cooldowns.</li>
+          <li><strong>Engines.</strong> The practice MPS is Qiskit Aer and the Pauli-path is a small Python stand-in. BlueQubit's engines will trade accuracy for settings differently.</li>
+          <li><strong>--no-wait.</strong> In practice a job finishes inside the submit call. Live, it really runs in the background.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="verdict">Verdict: the process is well rehearsed. The scores, costs and run times are not a forecast for Saturday. Retune on the live samples before trusting any setting.</p>
+
+    <h3>What changed in the kit</h3>
+    <p>The spending-cap fix is in <code>kit/bq_kit.py</code>. The original is kept untouched as <code>kit/bq_kit_v1.py</code>.</p>
+    <p><strong>Runs that wait for results</strong> used to check the cap only after each batch of 8 jobs, so one batch could blow past it.</p>
+    <ol>
+      <li>Before each batch, the kit prices the next qubit from real costs already paid at that exact setting.</li>
+      <li>With no real price yet, it runs 1 qubit first to learn it.</li>
+      <li>It sizes the batch to fit what's left under the cap and the budget.</li>
+      <li>It stops before the batch that would pass either one. In the test, a $0.002 cap that used to end at $0.0032 now stops at $0.0020.</li>
+    </ol>
+    <p><strong>Runs with <code>--no-wait</code></strong> used to ignore the cap completely, because those jobs report no cost until <code>collect</code>.</p>
+    <ol>
+      <li>The kit now projects the whole run before submitting anything.</li>
+      <li>It uses real prices when it has them. Otherwise it uses BlueQubit's estimate and prints a warning, since the estimate may ignore chi and th.</li>
+      <li>It submits only the qubits that fit under the cap and the budget.</li>
+      <li>Jobs waiting for <code>collect</code> now count against the budget, and rerunning skips them instead of paying twice.</li>
+    </ol>
+    <p>The rehearsal's <code>work/</code> folder moved to <code>work_rehearsal_2026-11-20/</code>, because practice spend was showing up as live spend. Live status now reads $0 of $25.</p>
+  </section>
+
+
+  <footer>Source files: work_rehearsal_2026-11-20/ (tuning.md, picks.md, submissions.md) for the rehearsal, work/ (captain_log.md, submissions.md, jobs.jsonl) for the live event, and .claude/agents/ in the hackathon kit folder. Spend figures come from the kit's ledger; practice prices are made up.</footer>
+</div>

@@ -1,0 +1,60 @@
+{
+  "S1": {
+    "num_qubits": 12,
+    "count_ops": {
+      "u3": 144,
+      "cz": 54,
+      "x": 1
+    },
+    "depth_1q": 13,
+    "depth_2q": 12,
+    "points": null
+  },
+  "S2": {
+    "num_qubits": 16,
+    "count_ops": {
+      "u3": 384,
+      "cz": 160,
+      "x": 2,
+      "z": 1
+    },
+    "depth_1q": 27,
+    "depth_2q": 24,
+    "points": null
+  },
+  "S3": {
+    "num_qubits": 20,
+    "count_ops": {
+      "u3": 640,
+      "cz": 248,
+      "x": 2,
+      "z": 1
+    },
+    "depth_1q": 35,
+    "depth_2q": 32,
+    "points": null
+  },
+  "G1": {
+    "num_qubits": 20,
+    "count_ops": {
+      "u3": 320,
+      "cz": 124,
+      "x": 1
+    },
+    "depth_1q": 17,
+    "depth_2q": 16,
+    "points": 300
+  },
+  "G2": {
+    "num_qubits": 24,
+    "count_ops": {
+      "u3": 768,
+      "cz": 304,
+      "x": 2,
+      "z": 1
+    },
+    "depth_1q": 35,
+    "depth_2q": 32,
+    "points": 600
+  }
+}

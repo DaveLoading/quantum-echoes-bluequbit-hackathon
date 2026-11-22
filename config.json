@@ -1,0 +1,12 @@
+{
+  "prefix": "MQW",
+  "budget_usd": 30.0,
+  "default_max_cost_per_run": 2.0,
+  "ask_david_above_usd": 2.0,
+  "max_parallel": 5,
+  "rehearsal_prefix": "Rehearsal",
+  "rehearsal_budget_usd": 5.0,
+  "ids": {
+    "G4": 36
+  }
+}

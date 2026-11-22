@@ -1,0 +1,13 @@
+<section id="task">
+<div class="head"><p class="eyebrow">The problem</p><h2>The task: read a quantum echo</h2></div>
+<div class="chips rise" style="--i:1">
+<p class="chip">|0⟩</p><p class="arrow">→</p><p class="chip">U</p><p class="arrow">→</p><p class="chip kick">x · butterfly</p><p class="arrow">→</p><p class="chip">U†</p><p class="arrow">→</p><p class="chip probe">z · probe</p><p class="arrow">→</p><p class="chip">U</p><p class="arrow">→</p><p class="chip kick">x</p><p class="arrow">→</p><p class="chip">U†</p><p class="arrow">→</p><p class="chip read">⟨Z⟩ on q</p>
+</div>
+<div class="row">
+<div class="card rise" style="--i:2"><h3>Each qubit is a coin</h3><p class="body">⟨Z⟩ says how hard it leans to heads (+1) or tails (−1). Each ID asks about one qubit.</p></div>
+<div class="card rise" style="--i:3"><h3>Scored on pattern</h3><p class="body">corr² with the exact values, rounded down to 0.1, times the points. Scale and offset don’t matter.</p></div>
+<div class="card rise" style="--i:4"><h3>Too big to do exactly</h3><p class="body">36 to 38 qubits and up to 7,296 two-qubit gates. Exact simulation stops at 34 qubits on the free tier.</p></div>
+</div>
+<p class="foot">Quantum Echoes · David</p>
+<aside>About 40 seconds. Each problem is a quantum echo. Shuffle the qubits with a scrambling circuit U, kick one “butterfly” qubit, then run the shuffle backward. The second-order ones do it twice, with a z flip on the probe qubit in between. For every qubit we report ⟨Z⟩: think of it as how hard that qubit’s coin leans to heads. Scoring is corr² against the exact answer, rounded down to the nearest tenth, times the points, so only the pattern matters. The catch: the big graded circuits have 36 to 38 qubits and up to 7,296 two-qubit gates, past what the free tier can simulate exactly.</aside>
+</section>
